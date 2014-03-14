@@ -11,19 +11,19 @@
 
 
 function admin_dependencies() {
-	echo '<link rel="stylesheet" href="'.plugins_url( 'SpeechArchive/css/token-input.css' , dirname(__FILE__) ).'">';
+	echo '<link rel="stylesheet" href="'.plugins_url( 'css/token-input.css' , __FILE__ ).'">';
 }
 
 add_action( 'admin_head', 'admin_dependencies');
 
 
 function my_admin_footer_function() {
-	echo '<script src="'.plugins_url( 'SpeechArchive/js/speechesjs.min.js' , dirname(__FILE__) ).'"></script>';
+	echo '<script src="'.plugins_url( 'js/speechesjs.min.js' , __FILE__).'"></script>';
 }
 add_action('admin_footer', 'my_admin_footer_function');
 
 function my_head_function() {
-	echo '<script src="'.plugins_url( 'SpeechArchive/js/mediaDisplay.js' , dirname(__FILE__) ).'"></script>';
+	echo '<script src="'.plugins_url( 'js/mediaDisplay.js' , __FILE__ ).'"></script>';
 }
 add_action('wp_head', 'my_head_function');
 /**********************************************/
