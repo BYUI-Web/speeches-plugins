@@ -2,7 +2,7 @@
 /**
  * Plugin Name: BYU-Idaho Speeches Archive
  * Plugin URI: http://mayanmediagroup.com
- * Description: devotional Directory Plugin
+ * Description: Speeches Directory Plugin
  * Version: 0.1
  * Author: Josh Crowther
  * Author URI: http://joshcrowther.com
@@ -11,16 +11,21 @@
 
 
 function admin_dependencies() {
-	echo '<link rel="stylesheet" href="'.plugins_url( 'SpeechesArchive/css/token-input.css' , dirname(__FILE__) ).'">';
+	echo '<link rel="stylesheet" href="'.plugins_url( 'SpeechArchive/css/token-input.css' , dirname(__FILE__) ).'">';
 }
 
 add_action( 'admin_head', 'admin_dependencies');
 
 
 function my_admin_footer_function() {
-	echo '<script src="'.plugins_url( 'SpeechesArchive/js/speechesjs.min.js' , dirname(__FILE__) ).'"></script>';
+	echo '<script src="'.plugins_url( 'SpeechArchive/js/speechesjs.min.js' , dirname(__FILE__) ).'"></script>';
 }
 add_action('admin_footer', 'my_admin_footer_function');
+
+function my_head_function() {
+	echo '<script src="'.plugins_url( 'SpeechArchive/js/mediaDisplay.js' , dirname(__FILE__) ).'"></script>';
+}
+add_action('wp_head', 'my_head_function');
 /**********************************************/
 /***** Register Devotionals Post Types *****/
 /**********************************************/
@@ -139,7 +144,9 @@ function devotional_metaboxes() {
 	$presenters = get_post_meta($post->ID, 'presenters', true);
 	$event_start_time = get_post_meta($post->ID, 'event_start_time', true);
 	$event_end_time = get_post_meta($post->ID, 'event_end_time', true);
+	$event_location = get_post_meta($post->ID, 'event_location', true);
 	$live_stream_embed = get_post_meta($post->ID, 'live_stream_embed', true);
+	$topics = get_post_meta($post->ID, 'topics', true);
 	if ($presenters)
 		$presentersArray = explode(', ', $presenters);
 
@@ -161,6 +168,8 @@ function devotional_metaboxes() {
   	// Echo out the field
 	echo '<p>Event Date:</p>';
 	echo '<input type="date" name="event_date" id="event_date" value="'. $event_date .'"/>';
+	echo '<p>Event Location:</p>';
+	echo '<input type="text" name="event_location" id="event_location" value="'. $event_location .'"/>';
 	echo '<p>Start Time:</p>';
 	echo '<input type="time" name="event_start_time" id="event_start_time" value="'. $event_start_time .'"/>';
 	echo '<p>End Time:</p>';
@@ -172,8 +181,10 @@ function devotional_metaboxes() {
 	echo '<p>Presenters:</p>';
 	echo '<input type="hidden" name="presenters" id="speaker-ids" value="'.$presenters.'"/>';
 	echo '<input type="text" id="speaker-names" name="presenters_display" placeholder="Speaker Name" class="widefat"/>';
-	echo '<p>Preparatory Material:</p>';
+	echo '<p>Preparatory Material (seperate with commas):</p>';
 	echo '<input type="text" name="prep_material" value="'. $prep_material .'" class="widefat" />';
+	echo '<p>Topics (seperate with commas):</p>';
+	echo '<input type="text" name="topics" value="'. $topics .'" class="widefat" />';
 	echo '<p>Video Embed Code: </p>';
 	echo '<textarea rows="4" name="video_embed" class="widefat">'.$video_embed.'</textarea>';
 	echo '<p>Video Download URL: </p>';
@@ -246,6 +257,8 @@ function save_devotional_meta($post_id, $post) {
 	$devotional_meta['event_start_time'] = $_POST['event_start_time'];
 	$devotional_meta['event_end_time'] = $_POST['event_end_time'];
 	$devotional_meta['live_stream_embed'] = $_POST['live_stream_embed'];
+	$devotional_meta['event_location'] = $_POST['event_location'];
+	$devotional_meta['topics'] = $_POST['topics'];
 
   // Add values of $devotional_meta as custom fields
 	foreach ($devotional_meta as $key => $value) { 
@@ -275,24 +288,26 @@ function save_devotional_meta($post_id, $post) {
 }
 add_action('save_post', 'save_devotional_meta', 1, 2); // save the custom fields
 
-function get_events_pagetype($single_template) {
+function get_custom_post_type_template( $archive_template ) {
 	global $post;
 
-	if ($post->post_type == 'devotional') {
-		$single_template = dirname( __FILE__ ) . '/event_template.php';
+	if ( is_post_type_archive ( 'devotional' ) ) {
+		$archive_template = dirname( __FILE__ ) . '/event_archive.php';
 	}
-	return $single_template;
+	if ( is_single ( 'devotional' ) ) {
+		$archive_template = dirname( __FILE__ ) . '/event_template.php';
+	}
+	return $archive_template;
 }
-add_filter( 'single_template', 'get_events_pagetype' );
-
-function get_custom_post_type_template( $archive_template ) {
-     global $post;
-
-     if ( is_post_type_archive ( 'devotional' ) ) {
-          $archive_template = dirname( __FILE__ ) . '/event_archive.php';
-     }
-     return $archive_template;
-}
-
+add_filter( 'single_template', 'get_custom_post_type_template' ) ;
 add_filter( 'archive_template', 'get_custom_post_type_template' ) ;
+
+// Show posts of 'post', 'page' and 'movie' post types on home page
+add_action( 'pre_get_posts', 'add_custom_post_types_to_loop' );
+
+function add_custom_post_types_to_loop( $query ) {
+	if ( is_home() && $query->is_main_query() )
+		$query->set( 'post_type', array( 'post', 'page', 'devotional', 'speaker' ) );
+	return $query;
+}
 ?>
