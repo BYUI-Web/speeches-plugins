@@ -150,24 +150,64 @@ $current_post_tags;
 			<h3>By this Speaker</h3>
 			<hr>
 			<h3>On this Topic</h3>
-			
-			<hr>
-			<h3>Other <?php echo $current_post_type; ?>s</h3>
 			<?php
+			$sameTopicPosts = array();
+			$counter = 0;
 			$loop = new WP_Query( array( 'post_type' => $current_post_type) );
-			while ( $loop->have_posts() ) : $loop->the_post(); 
-			$meta = get_post_meta(get_the_ID());
-			if (get_the_ID() == $current_post)
-				continue;
-			?>
+			if ($loop->have_posts()) { 
+				while ($loop->have_posts()) { 
+					$loop->the_post();
+					$tags = get_the_tags();
 
-			<a href="<?php the_permalink(); ?>"><h4><?php the_title(); ?></h4></a>
-			<p><?php echo get_the_title($meta['presenters'][0]); ?></p>
-			<p class="meta"><?php echo get_post_meta($meta['presenters'][0], 'title')[0]; ?></p>
+					foreach ($tags as $tag) {
+						$sameTopic = false;
+						foreach ($current_post_tags as $tagTest) {
+							if ($tag->name == $tagTest->name) {
+								$counter++;
+								if (!(get_the_ID() == $current_post)) {
+									$toAdd = get_the_ID();
+									$exists = false;
+									foreach ($sameTopicPosts as $id) {
+										if ($id == $toAdd)
+											$exists = true;
+									}
+									if (!$exists) :
+										if (count($sameTopicPosts) < 2)
+											array_push($sameTopicPosts, $toAdd);
+										endif;
+									}
+									continue;
+								}
+								if ($sameTopic)
+									break;
+							}
+						} 
+					}
+				}
 
-		<?php endwhile; ?>
-	</div>
-</aside>
+				?>
+				<?php foreach ($sameTopicPosts as $post) : ?>
+					<a href="<?php the_permalink(); ?>"><h4><?php the_title(); ?></h4></a>
+					<p><?php echo get_the_title($meta['presenters'][0]); ?></p>
+					<p class="meta"><?php echo get_post_meta($meta['presenters'][0], 'title')[0]; ?></p>
+				<?php endforeach; ?>
+				<hr>
+				<h3>Other <?php echo $current_post_type; ?>s</h3>
+				<?php
+				$loop = new WP_Query( array( 'post_type' => $current_post_type) );
+				while ( $loop->have_posts() ) : $loop->the_post(); 
+				$meta = get_post_meta(get_the_ID());
+				if (get_the_ID() == $current_post)
+					continue;
+				?>
+
+				<a href="<?php the_permalink(); ?>"><h4><?php the_title(); ?></h4></a>
+				<p><?php echo get_the_title($meta['presenters'][0]); ?></p>
+				<p class="meta"><?php echo get_post_meta($meta['presenters'][0], 'title')[0]; ?></p>
+
+			<?php endwhile; ?>
+		</div>
+	</aside>
 </div>
 
 <?php get_footer(); ?>

@@ -288,18 +288,36 @@ function save_devotional_meta($post_id, $post) {
 }
 add_action('save_post', 'save_devotional_meta', 1, 2); // save the custom fields
 
+
+function get_custom_event_template($single_template) {
+     global $post;
+
+     if ($post->post_type == 'devotional') {
+          $single_template = dirname( __FILE__ ) . '/event_template.php';
+     }
+     return $single_template;
+}
+add_filter( 'single_template', 'get_custom_event_template' );
+
+function get_custom_speaker_template($single_template) {
+     global $post;
+
+     if ($post->post_type == 'speaker') {
+          $single_template = dirname( __FILE__ ) . '/speaker_template.php';
+     }
+     return $single_template;
+}
+add_filter( 'single_template', 'get_custom_speaker_template' );
+
 function get_custom_post_type_template( $archive_template ) {
 	global $post;
 
 	if ( is_post_type_archive ( 'devotional' ) ) {
 		$archive_template = dirname( __FILE__ ) . '/event_archive.php';
 	}
-	if ( is_single ( 'devotional' ) ) {
-		$archive_template = dirname( __FILE__ ) . '/event_template.php';
-	}
 	return $archive_template;
 }
-add_filter( 'single_template', 'get_custom_post_type_template' ) ;
+
 add_filter( 'archive_template', 'get_custom_post_type_template' ) ;
 
 // Show posts of 'post', 'page' and 'movie' post types on home page
