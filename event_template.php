@@ -180,7 +180,7 @@ function getPostsBySpeaker($current_post_id) {
 						$string = get_post_meta($person, 'speaker_bio')[0];
 						$string = substr($string, 0, strpos(wordwrap($string, 150), "\n"));
 						?>
-						<p class="sidebar-speaker-meta"><?php echo $string; ?> <a class="read-more" href="#">More</a></p>
+						<p class="sidebar-speaker-meta"><?php echo $string; ?> <a class="read-more" href="<?php echo get_permalink($person); ?>">More</a></p>
 					</div>
 				</div>
 			<?php endforeach; ?>
