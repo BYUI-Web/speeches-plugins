@@ -43,7 +43,10 @@ function getPostsBySpeaker($current_post_id) {
 				break;
 		}
 	}
-	return $speakerPosts;
+	if (($speakerPosts))
+		return $speakerPosts;
+	else
+		return "No Posts Found";
 }
 ?>
 <div class="row">
@@ -61,6 +64,8 @@ function getPostsBySpeaker($current_post_id) {
 			$prep_material = explode(', ', $meta['prep_material'][0]);
 
 			$speaker_title = get_post_meta($presenters[0], 'title');
+
+
 			?>
 			<div <?php post_class() ?> id="post-<?php the_ID(); ?>">
 
@@ -129,6 +134,18 @@ function getPostsBySpeaker($current_post_id) {
 					</div>
 				</div>
 				<div class="entry">
+					<?php 
+					// Test each of the posts against "NOW" and see if its past present or future!
+					date_default_timezone_set('America/Denver');
+					$now = strtotime('now');
+					$post_start_time = strtotime(get_post_meta(get_the_ID(), 'event_date')[0] . ' ' . get_post_meta(get_the_ID(), 'event_start_time')[0]);
+
+					// Add posts to respective group (past, present, future)
+					if ($now < $post_start_time) : ?>
+					<div  id="transcript">
+						<p>This event is currently not available. Attend the event or watch the live stream on <?php echo date('l, F jS, Y \a\t g:i A', $post_time)?></p>
+					</div>
+				<?php else: ?>
 					<div class="group">
 						<div class="event-description">
 							<h2><?php the_title(); ?></h2>
@@ -142,60 +159,67 @@ function getPostsBySpeaker($current_post_id) {
 					<div id="discussion">
 
 					</div>
-					<br>
 					<a href="#top" class="speeches-button">Back to Top</a>
+				<?php endif; ?>
+			</div>
+		</div>
+		<!-- <?php comments_template(); ?> -->
+	<?php endwhile; endif; ?>
+</div>
+
+<aside class="col-xs-12 col-sm-4">
+<div class="aside-holder">
+	<div class="sidebar-inner event-details">
+		<h2>Event Details</h2>
+		<ul>
+			<li><span>Event Type: </span><?php echo $post_types[$current_post_type]; ?></li>
+			<li><span>Speaker: </span><?php echo get_the_title($presenters[0]); ?></li>
+			<li><span>When: </span><?php echo date('l, F jS, Y \a\t g:i A', $post_time); ?></li>
+			<li><span>Where: </span> <?php echo $meta['event_location'][0]; ?></li>
+			<li>
+				<span>Prepare: </span>The following scriptures have been recommended by the speaker, in preparation for the event.
+				<ul>
+					<?php foreach ($prep_material as $prep): ?>
+						<li><?php echo $prep; ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</li>
+		</ul>
+	</div>
+	<div class="sidebar-inner speaker-bio">
+		<?php foreach ($presenters as $person) : ?>
+
+			<h2>Speaker Bio</h2>
+			<div class="group">
+				<div class="sidebar-speaker-image"><?php echo get_the_post_thumbnail($person); ?></div>
+				<div class="sidebar-speaker-info">
+					<h3><?php echo get_the_title($person); ?></h3>
+					<?php 
+					$string = get_post_meta($person, 'speaker_bio')[0];
+					$string = substr($string, 0, strpos(wordwrap($string, 150), "\n"));
+					?>
+					<p class="sidebar-speaker-meta"><?php echo $string; ?> <a class="read-more" href="#">More</a></p>
 				</div>
 			</div>
-			<!-- <?php comments_template(); ?> -->
-		<?php endwhile; endif; ?>
+		<?php endforeach; ?>
 	</div>
-
-	<aside class="hidden-xs hidden-sm col-sm-4">
-		<div class="sidebar-inner event-details">
-			<h2>Event Details</h2>
-			<ul>
-				<li><span>Event Type: </span><?php echo $post_types[$current_post_type]; ?></li>
-				<li><span>Speaker: </span><?php echo get_the_title($presenters[0]); ?></li>
-				<li><span>When: </span><?php echo date('l, F jS, Y \a\t g:i A', $post_time); ?></li>
-				<li><span>Where: </span> <?php echo $meta['event_location'][0]; ?></li>
-				<li>
-					<span>Prepare: </span>The following scriptures have been recommended by the speaker, in preparation for the event.
-					<ul>
-						<?php foreach ($prep_material as $prep): ?>
-							<li><?php echo $prep; ?></li>
-						<?php endforeach; ?>
-					</ul>
-				</li>
-			</ul>
-		</div>
-		<div class="sidebar-inner speaker-bio">
-			<?php foreach ($presenters as $person) : ?>
-
-				<h2>Speaker Bio</h2>
-				<div class="group">
-					<div class="sidebar-speaker-image"><?php echo get_the_post_thumbnail($person); ?></div>
-					<div class="sidebar-speaker-info">
-						<h3><?php echo get_the_title($person); ?></h3>
-						<?php 
-						$string = get_post_meta($person, 'speaker_bio')[0];
-						$string = substr($string, 0, strpos(wordwrap($string, 150), "\n"));
-						?>
-						<p class="sidebar-speaker-meta"><?php echo $string; ?> <a class="read-more" href="#">More</a></p>
-					</div>
-				</div>
-			<?php endforeach; ?>
-		</div>
-		<div class="sidebar-inner sidebar-featured-speeches">
-			<h2>Related Speeches</h2>
+	<div class="sidebar-inner sidebar-featured-speeches">
+		<h2>Related Speeches</h2>
+		<div>
 			<h3>By this Speaker</h3>
 			<?php 
 			$posts = getPostsBySpeaker($current_post); 
-			foreach ($posts as $post) : ?>
-			<a href="<?php the_permalink(); ?>"><h4><?php the_title(); ?></h4></a>
-			<p><?php echo get_the_title($meta['presenters'][0]); ?></p>
-			<p class="meta"><?php echo get_post_meta($meta['presenters'][0], 'title')[0]; ?></p>
-		<?php endforeach; ?>
-		<hr>
+			if (is_array($posts)) :
+				foreach ($posts as $post) : ?>
+			<div>
+				<a href="<?php the_permalink(); ?>"><h4><?php the_title(); ?></h4></a>
+				<p><?php echo get_the_title($meta['presenters'][0]); ?></p>
+				<p class="meta"><?php echo get_post_meta($meta['presenters'][0], 'title')[0]; ?></p>
+			</div>
+		<?php endforeach; else: echo $posts; endif;?>
+	</div>
+	<hr>
+	<div>
 		<h3>On this Topic</h3>
 		<?php
 		$sameTopicPosts = array();
@@ -207,7 +231,6 @@ function getPostsBySpeaker($current_post_id) {
 				$tags = get_the_tags();
 
 				foreach ($tags as $tag) {
-					$sameTopic = false;
 					foreach ($current_post_tags as $tagTest) {
 						if ($tag->name == $tagTest->name) {
 							$counter++;
@@ -225,35 +248,44 @@ function getPostsBySpeaker($current_post_id) {
 								}
 								continue;
 							}
-							if ($sameTopic)
-								break;
 						}
 					} 
 				}
 			}
 
-			?>
-			<?php foreach ($sameTopicPosts as $post) : ?>
+			foreach ($sameTopicPosts as $post) : ?>
+			<div>
 				<a href="<?php the_permalink(); ?>"><h4><?php the_title(); ?></h4></a>
-				<p><?php echo get_the_title($meta['presenters'][0]); ?></p>
-				<p class="meta"><?php echo get_post_meta($meta['presenters'][0], 'title')[0]; ?></p>
-			<?php endforeach; ?>
-			<hr>
-			<h3>Other <?php echo $current_post_type; ?>s</h3>
-			<?php
-			$loop = new WP_Query( array( 'post_type' => $current_post_type) );
-			while ( $loop->have_posts() ) : $loop->the_post(); 
-			$meta = get_post_meta(get_the_ID());
-			if (get_the_ID() == $current_post)
-				continue;
-			?>
-
+				<p>
+					<?php
+					$presenter_id = get_post_meta($post, 'presenters')[0];
+					echo get_the_title($presenter_id); 
+					?>
+				</p>
+				<p class="meta"><?php echo get_post_meta($presenter_id, 'title')[0]; ?></p>
+			</div>
+		<?php endforeach; ?>
+	</div>
+	<hr>
+	<div>
+		<h3>Other <?php echo $current_post_type; ?>s</h3>
+		<?php
+		$loop = new WP_Query( array( 'post_type' => $current_post_type) );
+		while ( $loop->have_posts() ) : $loop->the_post(); 
+		$meta = get_post_meta(get_the_ID());
+		if (get_the_ID() == $current_post)
+			continue;
+		?>
+		<div>
 			<a href="<?php the_permalink(); ?>"><h4><?php the_title(); ?></h4></a>
 			<p><?php echo get_the_title($meta['presenters'][0]); ?></p>
 			<p class="meta"><?php echo get_post_meta($meta['presenters'][0], 'title')[0]; ?></p>
-
-		<?php endwhile; ?>
-	</div>
+		</div>
+	<?php endwhile; ?>
+</div>
+<div class="center"><a class="speeches-button" href="/<?php echo $current_post_type; ?>s">View All <?php echo $current_post_type; ?>s</a></div>
+</div>
+</div>
 </aside>
 </div>
 
