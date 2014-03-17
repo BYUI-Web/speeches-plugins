@@ -65,14 +65,28 @@ function getPostsBySpeaker($current_post_id) {
 
 			$speaker_title = get_post_meta($presenters[0], 'title');
 
-
+                        // Test each of the posts against "NOW" and see if its past present or future!
+                        date_default_timezone_set('America/Denver');
+                        $now = strtotime('now');
+                        $post_start_time = strtotime(get_post_meta(get_the_ID(), 'event_date')[0] . ' ' . get_post_meta(get_the_ID(), 'event_start_time')[0]);
+					
+                        
+                        //determine which video player to use
+                        if ($now < $post_start_time) {
+                            if ($meta['live_stream'][0] == "yes") {
+                                $video_embed = $meta['live_stream_embed'][0];
+                            }
+                        } else {
+                            $video_embed = $meta['video_embed'][0];
+                        }
+                        
 			?>
 			<div <?php post_class() ?> id="post-<?php the_ID(); ?>">
 
 				<div class="event-featured">
 					<div>
 						<div id="video-player">
-							<?php echo $meta['video_embed'][0]; ?>
+							<?php echo $video_embed; ?>
 						</div>
 						<div id="audio-player">
 							<?php echo $meta['audio_embed'][0]; ?>
@@ -134,18 +148,14 @@ function getPostsBySpeaker($current_post_id) {
 					</div>
 				</div>
 				<div class="entry">
-					<?php 
-					// Test each of the posts against "NOW" and see if its past present or future!
-					date_default_timezone_set('America/Denver');
-					$now = strtotime('now');
-					$post_start_time = strtotime(get_post_meta(get_the_ID(), 'event_date')[0] . ' ' . get_post_meta(get_the_ID(), 'event_start_time')[0]);
-
-					// Add posts to respective group (past, present, future)
+					<?php
+                                        
+                                        // Add posts to respective group (past, present, future)
 					if ($now < $post_start_time) : ?>
 					<div  id="transcript">
-						<p>This event is currently not available. Attend the event or watch the live stream on <?php echo date('l, F jS, Y \a\t g:i A', $post_time)?></p>
+                                            <p>This event is currently not available. Attend the event <?php if (get_post_meta(get_the_ID(), 'live_stream')[0] == "yes") {echo "or watch the live stream";} ?> on <?php echo date('l, F jS, Y \a\t g:i A', $post_time)?></p>
 					</div>
-				<?php else: ?>
+                                        <?php else: ?>
 					<div class="group">
 						<div class="event-description">
 							<h2><?php the_title(); ?></h2>
@@ -189,16 +199,17 @@ function getPostsBySpeaker($current_post_id) {
 		<?php foreach ($presenters as $person) : ?>
 
 			<h2>Speaker Bio</h2>
-				<div class="group">
-					<div class="sidebar-speaker-image"><?php echo get_the_post_thumbnail($person); ?></div>
-					<div class="sidebar-speaker-info">
-						<h3><?php echo get_the_title($person); ?></h3>
-						<?php 
-						$string = get_post_meta($person, 'speaker_bio')[0];
-						$string = substr($string, 0, strpos(wordwrap($string, 150), "\n"));
-						?>
-						<p class="sidebar-speaker-meta"><?php echo $string; ?> <a class="read-more" href="<?php echo get_permalink($person); ?>">More</a></p>
-					</div>
+			<div class="group">
+				<div class="sidebar-speaker-image"><?php echo get_the_post_thumbnail($person); ?></div>
+				<div class="sidebar-speaker-info">
+					<h3><?php echo get_the_title($person); ?></h3>
+					<?php 
+					$string = get_post_meta($person, 'speaker_bio')[0];
+					$string = substr($string, 0, strpos(wordwrap($string, 150),"\n"));
+					?>
+					<p class="sidebar-speaker-meta"><?php echo $string; ?> </p>
+                                        <a class="read-more" href="<?php echo get_permalink($person) ?>">More</a>
+				</div>
 			</div>
 		<?php endforeach; ?>
 	</div>
