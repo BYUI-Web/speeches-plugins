@@ -175,6 +175,7 @@ function devotional_metaboxes() {
 	$event_start_time = get_post_meta($post->ID, 'event_start_time', true);
 	$event_end_time = get_post_meta($post->ID, 'event_end_time', true);
 	$event_location = get_post_meta($post->ID, 'event_location', true);
+        $live_stream = get_post_meta($post->ID, 'live_stream', true);
 	$live_stream_embed = get_post_meta($post->ID, 'live_stream_embed', true);
 	$topics = get_post_meta($post->ID, 'topics', true);
 	if ($presenters)
@@ -205,7 +206,7 @@ function devotional_metaboxes() {
 	echo '<p>End Time:</p>';
 	echo '<input type="time" name="event_end_time" id="event_end_time" value="'. $event_end_time .'"/>';
 	echo '<p>Live Stream:</p>';
-	echo '<input type="radio" name="live_stream" id="live_stream_yes" value="yes"/><label for="live_stream_yes">Yes </label><input type="radio" name="live_stream" id="live_stream_no" value="no" checked/><label for="live_stream_no">No</label>';
+	echo '<input type="radio" name="live_stream" id="live_stream_yes" value="yes"' . (($live_stream) ? 'checked' : '') . '/><label for="live_stream_yes">Yes </label><input type="radio" name="live_stream" id="live_stream_no" value="no" ' . ((!$live_stream) ? 'checked' : '') . '/><label for="live_stream_no">No</label>';
 	echo '<div id="live_stream"><p>Live Stream Embed Code: </p>';
 	echo '<textarea rows="4" name="live_stream_embed" class="widefat">'.$live_stream_embed.'</textarea></div>';
 	echo '<p>Presenters:</p>';
@@ -357,6 +358,7 @@ function save_devotional_meta($post_id, $post) {
 	$devotional_meta['presenters'] = $_POST['presenters'];
 	$devotional_meta['event_start_time'] = $_POST['event_start_time'];
 	$devotional_meta['event_end_time'] = $_POST['event_end_time'];
+        $devotional_meta['live_stream'] = $_POST['live_stream'];
 	$devotional_meta['live_stream_embed'] = $_POST['live_stream_embed'];
 	$devotional_meta['event_location'] = $_POST['event_location'];
 	$devotional_meta['topics'] = $_POST['topics'];
