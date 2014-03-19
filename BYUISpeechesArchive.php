@@ -395,7 +395,7 @@ add_action('save_post', 'save_devotional_meta', 1, 2); // save the custom fields
 function get_custom_event_template($single_template) {
      global $post;
 
-     if ($post->post_type == 'devotional') {
+     if ($post->post_type == 'devotional' || $post->post_type == 'forum') {
           $single_template = dirname( __FILE__ ) . '/event_template.php';
      }
      return $single_template;
