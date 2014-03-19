@@ -27,7 +27,7 @@ function my_head_function() {
 }
 add_action('wp_head', 'my_head_function');
 /**********************************************/
-/***** Register Devotionals Post Types *****/
+/***** Register Events Post Types *****/
 /**********************************************/
 function register_devotionals_posttype() {
 	register_post_type( 'devotional',
@@ -55,6 +55,33 @@ function register_devotionals_posttype() {
 	flush_rewrite_rules( false );
 }
 add_action( 'init', 'register_devotionals_posttype' );
+
+function register_forums_posttype() {
+	register_post_type( 'forum',
+		array(
+			'labels' => array(
+				'name' => __( 'Forums' ),
+				'singular_name' => __( 'Forum' ),
+				'add_new' => __( 'Add New Forum' ),
+				'add_new_item' => __( 'Add New Forum' ),
+				'edit_item' => __( 'Edit Forum' ),
+				'new_item' => __( 'Add New Forum' ),
+				'view_item' => __( 'View Forum' ),
+				'search_items' => __( 'Search Forums' ),
+				'not_found' => __( 'No Forums found' )
+				),
+			'has_archive' => true,
+			'taxonomies' => array('category','post_tag'),
+			'public' => true,
+			'supports' => array( 'title', 'thumbnail', 'revisions'),
+      'rewrite' => array( "slug" => "forums" , 'with_front' => true), // Permalinks format
+      'menu_position' => 5,
+      'register_meta_box_cb' => 'add_forum_metaboxes'
+      )
+		);
+	flush_rewrite_rules( false );
+}
+add_action( 'init', 'register_forums_posttype' );
 
 /**********************************************/
 /******** Register Speakers Post Types ********/
@@ -99,6 +126,9 @@ add_action( 'init', 'create_post_pub' );
 /**********     devotional Meta     *********/
 /*************************************************/
 // Add the devotional Meta Boxes
+function add_forum_metaboxes() {
+	add_meta_box('forum_metaboxes', 'Forum Information', 'forum_metaboxes', 'forum', 'normal', 'default');
+}
 function add_devotional_metaboxes() {
 	add_meta_box('devotional_metaboxes', 'Devotional Information', 'devotional_metaboxes', 'devotional', 'normal', 'default');
 }
@@ -130,7 +160,77 @@ function devotional_metaboxes() {
 	global $post;
 
   // Noncename needed to verify where the data originated
-	echo '<input type="hidden" name="devotional_nonce" id="devotional_nonce" value="' .
+	echo '<input type="hidden" name="event_nonce" id="event_nonce" value="' .
+	wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
+
+  // Get the location data if its already been entered
+	$video_embed = get_post_meta($post->ID, 'video_embed', true);
+	$video_download = get_post_meta($post->ID, 'video_download', true);
+	$audio_embed = get_post_meta($post->ID, 'audio_embed', true);
+	$audio_download = get_post_meta($post->ID, 'audio_download', true);
+	$event_date = get_post_meta($post->ID, 'event_date', true);
+	$prep_material = get_post_meta($post->ID, 'prep_material', true);
+	$transcript = get_post_meta($post->ID, 'transcript', true);
+	$presenters = get_post_meta($post->ID, 'presenters', true);
+	$event_start_time = get_post_meta($post->ID, 'event_start_time', true);
+	$event_end_time = get_post_meta($post->ID, 'event_end_time', true);
+	$event_location = get_post_meta($post->ID, 'event_location', true);
+	$live_stream_embed = get_post_meta($post->ID, 'live_stream_embed', true);
+	$topics = get_post_meta($post->ID, 'topics', true);
+	if ($presenters)
+		$presentersArray = explode(', ', $presenters);
+
+	echo '<script>';
+	echo 'prepopulate = [];';
+	if (is_array($presentersArray)) {
+		foreach ($presentersArray as $person) {
+			echo 'prepopulate.push({ "id" : '. $person . ', "name" : "' . get_the_title($person) . '" });';
+		}
+	}
+	echo 'speakers = [];';
+
+	$loop = new WP_Query( array( 'post_type' => 'speaker') );
+	while ( $loop->have_posts() ) : $loop->the_post(); 
+	echo 'speakers.push({ "id" : '. get_the_ID() . ', "name" : "' . get_the_title() . '" });';
+	endwhile;
+	echo '</script>';
+
+  	// Echo out the field
+	echo '<p>Event Date:</p>';
+	echo '<input type="date" name="event_date" id="event_date" value="'. $event_date .'"/>';
+	echo '<p>Event Location:</p>';
+	echo '<input type="text" name="event_location" id="event_location" value="'. $event_location .'"/>';
+	echo '<p>Start Time:</p>';
+	echo '<input type="time" name="event_start_time" id="event_start_time" value="'. $event_start_time .'"/>';
+	echo '<p>End Time:</p>';
+	echo '<input type="time" name="event_end_time" id="event_end_time" value="'. $event_end_time .'"/>';
+	echo '<p>Live Stream:</p>';
+	echo '<input type="radio" name="live_stream" id="live_stream_yes" value="yes"/><label for="live_stream_yes">Yes </label><input type="radio" name="live_stream" id="live_stream_no" value="no" checked/><label for="live_stream_no">No</label>';
+	echo '<div id="live_stream"><p>Live Stream Embed Code: </p>';
+	echo '<textarea rows="4" name="live_stream_embed" class="widefat">'.$live_stream_embed.'</textarea></div>';
+	echo '<p>Presenters:</p>';
+	echo '<input type="hidden" name="presenters" id="speaker-ids" value="'.$presenters.'"/>';
+	echo '<input type="text" id="speaker-names" name="presenters_display" placeholder="Speaker Name" class="widefat"/>';
+	echo '<p>Preparatory Material (seperate with commas):</p>';
+	echo '<input type="text" name="prep_material" value="'. $prep_material .'" class="widefat" />';
+	echo '<p>Topics (seperate with commas):</p>';
+	echo '<input type="text" name="topics" value="'. $topics .'" class="widefat" />';
+	echo '<p>Video Embed Code: </p>';
+	echo '<textarea rows="4" name="video_embed" class="widefat">'.$video_embed.'</textarea>';
+	echo '<p>Video Download URL: </p>';
+	echo '<input type="text" name="video_download" value="' . $video_download  . '" class="widefat" />';
+	echo '<p>Audio Embed Code: </p>';
+	echo '<textarea rows="4" name="audio_embed" class="widefat">'.$audio_embed.'</textarea>';
+	echo '<p>Audio Download URL: </p>';
+	echo '<input type="text" name="audio_download" value="' . $audio_download. '" class="widefat" />';
+	echo '<p>Transcript: </p>';
+	echo '<textarea rows="10" name="transcript" class="widefat">'.$transcript.'</textarea>';
+}
+function forum_metaboxes() {
+	global $post;
+
+  // Noncename needed to verify where the data originated
+	echo '<input type="hidden" name="event_nonce" id="event_nonce" value="' .
 	wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
 
   // Get the location data if its already been entered
@@ -197,6 +297,7 @@ function devotional_metaboxes() {
 	echo '<textarea rows="10" name="transcript" class="widefat">'.$transcript.'</textarea>';
 }
 
+
 // Save the Metabox Data
 function save_speaker_meta($post_id, $post) {
   // verify this came from the our screen and with proper authorization,
@@ -238,7 +339,7 @@ add_action('save_post', 'save_speaker_meta', 1, 2); // save the custom fields
 function save_devotional_meta($post_id, $post) {
   // verify this came from the our screen and with proper authorization,
   // because save_post can be triggered at other times
-	if ( !wp_verify_nonce( $_POST['devotional_nonce'], plugin_basename(__FILE__) )) {
+	if ( !wp_verify_nonce( $_POST['event_nonce'], plugin_basename(__FILE__) )) {
 		return $post->ID;
 	}
   // Is the user allowed to edit the post or page?
