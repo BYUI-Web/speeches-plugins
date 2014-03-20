@@ -58,7 +58,7 @@ $speaker_posts = getPostsBySpeaker($id);
                     <?php foreach ($speaker_posts as $post): ?>
                         <?php
                         $post_title = get_the_title($post);
-                        $post_date = get_post_meta($post, "event_date")[0];
+                        $post_date = date("F jS, Y", get_post_meta($post, "event_date")[0]);
                         $url = get_permalink($post);
                         ?>
                         <li>

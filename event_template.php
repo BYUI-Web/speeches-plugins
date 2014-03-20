@@ -1,3 +1,9 @@
+<?php
+//determine if the event date is in the future or past
+
+
+?>
+
 <?php get_header(); ?>
 <?php 
 $current_post; 
@@ -56,7 +62,7 @@ function getPostsBySpeaker($current_post_id) {
 		<?php if (have_posts()) : while (have_posts()) : the_post(); ?>
 			<?php $meta = get_post_meta( get_the_ID() ); ?>
 			<?php
-			$post_time = strtotime(get_post_meta(get_the_ID(), 'event_date')[0] . ' ' . get_post_meta(get_the_ID(), 'event_start_time')[0]);
+			$post_time = get_post_meta(get_the_ID(), 'event_date')[0];
 			$current_post = get_the_ID();
 			$current_post_type = get_post_type( $current_post );
 			$current_post_tags = get_the_tags();
@@ -68,7 +74,6 @@ function getPostsBySpeaker($current_post_id) {
                         // Test each of the posts against "NOW" and see if its past present or future!
                         date_default_timezone_set('America/Denver');
                         $now = strtotime('now');
-                        $post_start_time = strtotime(get_post_meta(get_the_ID(), 'event_date')[0] . ' ' . get_post_meta(get_the_ID(), 'event_start_time')[0]);
 			$post_end_time = strtotime($meta['event_date'][0] . ' ' . $meta['event_end_date'][0]);		
                         
                         //determine which video player to use
