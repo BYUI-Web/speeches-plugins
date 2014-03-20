@@ -69,10 +69,10 @@ function getPostsBySpeaker($current_post_id) {
                         date_default_timezone_set('America/Denver');
                         $now = strtotime('now');
                         $post_start_time = strtotime(get_post_meta(get_the_ID(), 'event_date')[0] . ' ' . get_post_meta(get_the_ID(), 'event_start_time')[0]);
-					
+			$post_end_time = strtotime($meta['event_date'][0] . ' ' . $meta['event_end_date'][0]);		
                         
                         //determine which video player to use
-                        if ($now < $post_start_time) {
+                        if ($now >= $post_start_time && $now <= $post_end_time) {
                             if ($meta['live_stream'][0] == "yes") {
                                 $video_embed = $meta['live_stream_embed'][0];
                             }
