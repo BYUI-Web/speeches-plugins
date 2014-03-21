@@ -42,7 +42,7 @@ function register_devotionals_posttype() {
             'view_item' => __('View Devotional'),
             'search_items' => __('Search Devotionals'),
             'not_found' => __('No Devotionals found')
-        ),
+            ),
         'has_archive' => true,
         'taxonomies' => array('category', 'post_tag'),
         'public' => true,
@@ -50,7 +50,7 @@ function register_devotionals_posttype() {
         'rewrite' => array("slug" => "devotionals", 'with_front' => true), // Permalinks format
         'menu_position' => 5,
         'register_meta_box_cb' => 'add_devotional_metaboxes'
-            )
+        )
     );
     flush_rewrite_rules(false);
 }
@@ -69,7 +69,7 @@ function register_forums_posttype() {
             'view_item' => __('View Forum'),
             'search_items' => __('Search Forums'),
             'not_found' => __('No Forums found')
-        ),
+            ),
         'has_archive' => true,
         'taxonomies' => array('category', 'post_tag'),
         'public' => true,
@@ -77,7 +77,7 @@ function register_forums_posttype() {
         'rewrite' => array("slug" => "forums", 'with_front' => true), // Permalinks format
         'menu_position' => 5,
         'register_meta_box_cb' => 'add_forum_metaboxes'
-            )
+        )
     );
     flush_rewrite_rules(false);
 }
@@ -100,7 +100,7 @@ function register_speakers_posttype() {
             'view_item' => __('View Speaker'),
             'search_items' => __('Search Speakers'),
             'not_found' => __('No Speakers found')
-        ),
+            ),
         'has_archive' => true,
         'taxonomies' => array('category'),
         'public' => true,
@@ -108,7 +108,7 @@ function register_speakers_posttype() {
         'rewrite' => array("slug" => "speaker", 'with_front' => true), // Permalinks format
         'menu_position' => 5,
         'register_meta_box_cb' => 'add_speakers_metaboxes'
-            )
+        )
     );
     flush_rewrite_rules(false);
 }
@@ -188,6 +188,7 @@ function devotional_metaboxes() {
     $topics = get_post_meta($post->ID, 'topics', true);
 
     //parse event_date to the date and the time
+    $event_end_time = date('h:i A', $event_end_time);
     $event_start_time = date('h:i A', $event_date);
     $event_date = date('Y-m-d', $event_date);
 
@@ -208,7 +209,7 @@ function devotional_metaboxes() {
 
     $loop = new WP_Query(array('post_type' => 'speaker'));
     while ($loop->have_posts()) : $loop->the_post();
-        echo 'speakers.push({ "id" : ' . get_the_ID() . ', "name" : "' . get_the_title() . '" });';
+    echo 'speakers.push({ "id" : ' . get_the_ID() . ', "name" : "' . get_the_title() . '" });';
     endwhile;
     echo '</script>';
 
@@ -279,7 +280,7 @@ function forum_metaboxes() {
 
     $loop = new WP_Query(array('post_type' => 'speaker'));
     while ($loop->have_posts()) : $loop->the_post();
-        echo 'speakers.push({ "id" : ' . get_the_ID() . ', "name" : "' . get_the_title() . '" });';
+    echo 'speakers.push({ "id" : ' . get_the_ID() . ', "name" : "' . get_the_title() . '" });';
     endwhile;
     echo '</script>';
 
@@ -353,7 +354,7 @@ function save_speaker_meta($post_id, $post) {
 
 add_action('save_post', 'save_speaker_meta', 1, 2); // save the custom fields
 // Save the Metabox Data
-function save_devotional_meta($post_id, $post) {
+function save_event_meta($post_id, $post) {
     date_default_timezone_set("America/Denver");
     // verify this came from the our screen and with proper authorization,
     // because save_post can be triggered at other times
@@ -373,7 +374,7 @@ function save_devotional_meta($post_id, $post) {
     $devotional_meta['prep_material'] = $_POST['prep_material'];
     $devotional_meta['transcript'] = $_POST['transcript'];
     $devotional_meta['presenters'] = $_POST['presenters'];
-    $devotional_meta['event_end_time'] = $_POST['event_end_time'];
+    $devotional_meta['event_end_time'] = $_POST['event_date'] . " " . $_POST['event_end_time'];
     $devotional_meta['live_stream'] = $_POST['live_stream'];
     $devotional_meta['live_stream_embed'] = $_POST['live_stream_embed'];
     $devotional_meta['event_location'] = $_POST['event_location'];
@@ -381,6 +382,7 @@ function save_devotional_meta($post_id, $post) {
 
     //convert event_date meta tag to unix time stamp
     $devotional_meta['event_date'] = strtotime($devotional_meta['event_date']);
+    $devotional_meta['event_end_time'] = strtotime($devotional_meta['event_end_time']);
 
     // Add values of $devotional_meta as custom fields
     foreach ($devotional_meta as $key => $value) {
@@ -409,7 +411,7 @@ function save_devotional_meta($post_id, $post) {
     }
 }
 
-add_action('save_post', 'save_devotional_meta', 1, 2); // save the custom fields
+add_action('save_post', 'save_event_meta', 1, 2); // save the custom fields
 
 function get_custom_event_template($single_template) {
     global $post;
@@ -444,13 +446,15 @@ function get_custom_post_type_template($archive_template) {
 
 add_filter('archive_template', 'get_custom_post_type_template');
 
-// Show posts of 'post', 'page' and 'movie' post types on home page
-add_action('pre_get_posts', 'add_custom_post_types_to_loop');
+
 
 function add_custom_post_types_to_loop($query) {
     if (is_home() && $query->is_main_query())
-        $query->set('post_type', array('post', 'page', 'devotional', 'speaker'));
+        $query->set('post_type', array('post', 'page', 'devotional', 'speaker', 'forum'));
     return $query;
 }
+
+// Show posts of 'post', 'page' and 'movie' post types on home page
+add_action('pre_get_posts', 'add_custom_post_types_to_loop');
 
 ?>

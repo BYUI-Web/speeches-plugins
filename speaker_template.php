@@ -72,4 +72,4 @@ $speaker_posts = getPostsBySpeaker($id);
     </aside>
 </div>
 
-<?PHP get_footer();
+<?php get_footer();
