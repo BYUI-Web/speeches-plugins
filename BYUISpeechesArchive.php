@@ -47,7 +47,7 @@ function register_devotionals_posttype() {
         'taxonomies' => array('category', 'post_tag'),
         'public' => true,
         'supports' => array('title', 'thumbnail', 'revisions'),
-        'rewrite' => array("slug" => "devotionals", 'with_front' => true), // Permalinks format
+        'rewrite' => array("slug" => "devotionals", 'with_front' => true, "comments"), // Permalinks format
         'menu_position' => 5,
         'register_meta_box_cb' => 'add_devotional_metaboxes'
         )

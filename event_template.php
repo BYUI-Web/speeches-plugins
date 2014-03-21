@@ -9,9 +9,6 @@ $post_time;
 $prep_material;
 $current_post_type;
 get_header();
-?>
-<div class="row">
-	<div class="col-xs-12 col-sm-8">
 
 $current_post = get_the_ID();
 $post_types = array('devotional' => 'BYU-Idaho Devtional');
@@ -20,10 +17,6 @@ $post_types = array('devotional' => 'BYU-Idaho Devtional');
 $meta = get_post_meta(get_the_ID());
 //loop through meta and create variables with the name of the key
 foreach($meta as $key => $value) { ${$key} = $value[0]; }
-//make two variables for the event's date and start time since in the meta they
-//are stored as one string
-$event_date_only = date("Y-m-d", $event_date);
-$event_start_time = date("h:i A", $event_date);
 $current_post_type = get_post_type();
 
 ?>

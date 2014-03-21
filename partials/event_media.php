@@ -8,14 +8,13 @@
 
 <?php
 //determine which video player to use
-$now = strtotime("now");
-$event_end_time_UNX = strtotime($event_date_only . " " . $event_end_time);
+$post_status = postTimeStatus(get_the_ID());
 //has the event already past?
-if ($event_end_time_UNX < $now) {
-    $vido_player = $video_embed;
+if ($post_status == "past") {
+    $video_player = $video_embed;
 }
 //could be during the event
-else if ($now >= $event_date && $now <= $event_end_time) {
+else if ($post_status == "present") {
     //do they have a live stream embed code?
     if ($live_stream == "yes") {
         $video_player = $live_stream_embed;

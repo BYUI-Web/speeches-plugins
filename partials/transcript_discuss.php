@@ -1,32 +1,37 @@
 <?php
-    $title = the_title();
+    $title = get_the_title();
     
     //we need to build the speaker string
     $presenters = explode(", ", $presenters);
     
     //get the presenters name
-    $speakerNames = get_the_title($presenters[0]);
+    $speaker = array();
     
-    $counter = 0;
-    $numPresenters = count($presenters);
-    for ($i = 1; $i < $numPresenters; $i++) {
-        
+    $numSpeakers = count($presenters);
+    for ($i = 0; $i < $numSpeakers; $i++) {
+        $speaker[$i]['name'] = get_the_title($presenters[$i]);
+        $speaker[$i]['title'] = get_post_meta($presenters[$i], 'title')[0];
     }
+    
 ?>
 
 <div class="entry">
     <div class="group">
         <div class="event-description">
-            <h2><?php the_title(); ?></h2>
-            <h3><?php echo get_the_title($presenters[0]); ?></h3>
-            <h4><?php echo $speaker_title[0]; ?></h4>
+            <h2><?php echo $title; ?></h2>
+            <?php foreach($speaker as $speak) : ?>
+                <h3><?php echo $speak['name']; ?></h3>
+                <?php if (!empty($speak['title'])) : ?>
+                    <h4><?php echo $speak['title']; ?></h4>
+                <?php endif; ?>
+            <?php endforeach; ?>
         </div>
     </div>
     <div id="transcript">
-        <p><?php echo wpautop($meta['transcript'][0]); ?></p>
+        <p><?php echo wpautop($transcript); ?></p>
     </div>
     <div id="discussion">
-
+        <!-- <?php comments_template('', true); ?> -->
     </div>
     <a href="#top" class="speeches-button">Back to Top</a>
 </div>
