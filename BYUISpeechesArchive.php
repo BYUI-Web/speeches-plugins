@@ -173,12 +173,15 @@ function devotional_metaboxes() {
     wp_create_nonce(plugin_basename(__FILE__)) . '" />';
 
     // Get the location data if its already been entered
+    $video_status = get_post_meta($post->ID, 'video_status', true);
     $video_embed = get_post_meta($post->ID, 'video_embed', true);
     $video_download = get_post_meta($post->ID, 'video_download', true);
+    $audio_status = get_post_meta($post->ID, 'audio_status', true);
     $audio_embed = get_post_meta($post->ID, 'audio_embed', true);
     $audio_download = get_post_meta($post->ID, 'audio_download', true);
     $event_date = get_post_meta($post->ID, 'event_date', true);
     $prep_material = get_post_meta($post->ID, 'prep_material', true);
+    $transcript_status = get_post_meta($post->ID, 'transcript_status' ,true);
     $transcript = get_post_meta($post->ID, 'transcript', true);
     $presenters = get_post_meta($post->ID, 'presenters', true);
     $event_end_time = get_post_meta($post->ID, 'event_end_time', true);
@@ -223,7 +226,7 @@ function devotional_metaboxes() {
     echo '<p>End Time:</p>';
     echo '<input type="time" name="event_end_time" id="event_end_time" value="' . $event_end_time . '"/>';
     echo '<p>Live Stream:</p>';
-    echo '<input type="radio" name="live_stream" id="live_stream_yes" value="yes"' . (($live_stream) ? 'checked' : '') . '/><label for="live_stream_yes">Yes </label><input type="radio" name="live_stream" id="live_stream_no" value="no" ' . ((!$live_stream) ? 'checked' : '') . '/><label for="live_stream_no">No</label>';
+    echo '<input type="radio" name="live_stream" id="live_stream_yes" value="yes"' . (($live_stream == "yes") ? 'checked' : '') . '/><label for="live_stream_yes">Yes </label><input type="radio" name="live_stream" id="live_stream_no" value="no" ' . (($live_stream == "no") ? 'checked' : '') . '/><label for="live_stream_no">No</label>';
     echo '<div id="live_stream"><p>Live Stream Embed Code: </p>';
     echo '<textarea rows="4" name="live_stream_embed" class="widefat">' . $live_stream_embed . '</textarea></div>';
     echo '<p>Presenters:</p>';
@@ -233,16 +236,22 @@ function devotional_metaboxes() {
     echo '<input type="text" name="prep_material" value="' . $prep_material . '" class="widefat" />';
     echo '<p>Topics (seperate with commas):</p>';
     echo '<input type="text" name="topics" value="' . $topics . '" class="widefat" />';
-    echo '<p>Video Embed Code: </p>';
+    echo '<p>Video</p>';
+    echo '<input type="radio" name="video_status" value="yes" id="video_status_yes"' . (($video_status == "yes") ? 'checked' : '') . '/><label for="video_status_yes">Yes </label><input type="radio" name="video_status" value="not_yet" id="video_status_not_yet" value="not_yet" ' . (($video_status == "not_yet") ? 'checked' : '') . '/><label for="video_status_not_yet">Not Yet </label><input type="radio" name="video_status" id="video_status_never" value="never"' . (($video_status == "never") ? 'checked' : '') . '/><label for="video_status_never">Never </label>';
+    echo '<div id="video_media"><p>Video Embed Code: </p>';
     echo '<textarea rows="4" name="video_embed" class="widefat">' . $video_embed . '</textarea>';
     echo '<p>Video Download URL: </p>';
-    echo '<input type="text" name="video_download" value="' . $video_download . '" class="widefat" />';
-    echo '<p>Audio Embed Code: </p>';
+    echo '<input type="text" name="video_download" value="' . $video_download . '" class="widefat" /></div>';
+    echo '<p>Audio</p>';
+    echo '<input type="radio" name="audio_status" value="yes" id="audio_status_yes"' . (($audio_status == "yes") ? 'checked' : '') . '/><label for="audio_status_yes">Yes </label><input type="radio" name="audio_status" value="not_yet" id="audio_status_not_yet" value="not_yet" ' . (($audio_status == "not_yet") ? 'checked' : '') . '/><label for="audio_status_not_yet">Not Yet </label><input type="radio" name="audio_status" id="audio_status_never" value="never"' . (($audio_status == "never") ? 'checked' : '') . '/><label for="audio_status_never">Never </label>';
+    echo '<div id="audio_media"><p>Audio Embed Code: </p>';
     echo '<textarea rows="4" name="audio_embed" class="widefat">' . $audio_embed . '</textarea>';
     echo '<p>Audio Download URL: </p>';
-    echo '<input type="text" name="audio_download" value="' . $audio_download . '" class="widefat" />';
-    echo '<p>Transcript: </p>';
-    echo '<textarea rows="10" name="transcript" class="widefat">' . $transcript . '</textarea>';
+    echo '<input type="text" name="audio_download" value="' . $audio_download . '" class="widefat" /></div>';
+    echo '<p>Transcript</p>';
+    echo '<input type="radio" name="transcript_status" value="yes" id="transcript_status_yes"' . (($transcript_status == "yes") ? 'checked' : '') . '/><label for="transcript_status_yes">Yes </label><input type="radio" name="transcript_status" value="not_yet" id="transcript_status_not_yet" value="not_yet" ' . (($transcript_status == "not_yet") ? 'checked' : '') . '/><label for="transcript_status_not_yet">Not Yet </label><input type="radio" name="transcript_status" id="transcript_status_never" value="never"' . (($transcript_status == "never") ? 'checked' : '') . '/><label for="transcript_status_never">Never </label>';
+    echo '<div id="transcript"><p>Transcript: </p>';
+    echo '<textarea rows="10" name="transcript" class="widefat">' . $transcript . '</textarea></div>';
 }
 
 function forum_metaboxes() {
@@ -379,6 +388,9 @@ function save_event_meta($post_id, $post) {
     $devotional_meta['live_stream_embed'] = $_POST['live_stream_embed'];
     $devotional_meta['event_location'] = $_POST['event_location'];
     $devotional_meta['topics'] = $_POST['topics'];
+    $devotional_meta['video_status'] = $_POST['video_status'];
+    $devotional_meta['audio_status'] = $_POST['audio_status'];
+    $devotional_meta['transcript_status'] = $_POST['transcript_status'];
 
     //convert event_date meta tag to unix time stamp
     $devotional_meta['event_date'] = strtotime($devotional_meta['event_date']);

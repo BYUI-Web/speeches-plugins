@@ -11,7 +11,13 @@
 $post_status = postTimeStatus(get_the_ID());
 //has the event already past?
 if ($post_status == "past") {
-    $video_player = $video_embed;
+    //check to see if the video has been provided
+    if ($video_status == "yes") {
+        $video_player = $video_embed;
+    }
+    if ($audio_status == "yes") {
+        $audio_player = $audio_embed;
+    }
 }
 //could be during the event
 else if ($post_status == "present") {
@@ -46,28 +52,28 @@ else {
 <?php echo $video_player; ?>
         </div>
         <div id="audio-player">
-<?php echo $audio_embed; ?>
+<?php echo $audio_player; ?>
         </div>
     </div>
     <div class="additional-featured group">
-        <div class="custom-box">
-            <a href="javascript:void(0)" onclick="dispVideo()">
+        <div class="custom-box <?php echo ($video_status != "yes") ? 'disabled' : ''; ?>">
+            <a href="javascript:void(0)" onclick="dispVideo(this)">
                 <img class="feat_icon" src="<?php bloginfo('template_url'); ?>/images/tv.png" >
                 <div class="right">
                     <h3>Watch</h3>
                 </div>
             </a>
         </div>
-        <div class="custom-box">
-            <a href="javascript:void(0)" onclick="dispRead()">
+        <div class="custom-box <?php echo ($transcript_status != "yes") ? 'disabled' : ''; ?>">
+            <a href="javascript:void(0)" onclick="dispRead(this)">
                 <img class="feat_icon" src="<?php bloginfo('template_url'); ?>/images/read.png" >
                 <div class="right">
                     <h3>Read</h3>
                 </div>
             </a>
         </div>
-        <div class="custom-box">
-            <a href="javascript:void(0)" onclick="dispListen()">
+        <div class="custom-box <?php echo ($audio_status != "yes") ? 'disabled' : ''; ?>">
+            <a href="javascript:void(0)" onclick="dispListen(this)">
                 <img class="feat_icon" src="<?php bloginfo('template_url'); ?>/images/headphones.png" >
                 <div class="right">
                     <h3>Listen</h3>

@@ -1,4 +1,6 @@
-function dispVideo() {
+function dispVideo(element) {
+    //make sure the video hasn't been disabled
+    if (element.parentElement.className.indexOf("disabled") === -1) {
 	document.getElementById('video-player').style.display='block';
 	document.getElementById('audio-player').style.display='none';
 	document.getElementById('watch').style.display='block';
@@ -6,17 +8,21 @@ function dispVideo() {
 	document.getElementById('listen').style.display='none';
 	document.getElementById('read').style.display='none';
 	document.getElementById('discussion').style.display='none';
+    }
 }
 
-function dispRead() {
+function dispRead(element) {
+    if (element.parentElement.className.indexOf("disabled") === -1) {
 	document.getElementById('transcript').style.display='block';
 	document.getElementById('watch').style.display='none';
 	document.getElementById('listen').style.display='none';
 	document.getElementById('read').style.display='block';
 	document.getElementById('discussion').style.display='none';
+    }
 }
 
-function dispListen() {
+function dispListen(element) {
+    if (element.parentElement.className.indexOf("disabled") === -1) {
 	document.getElementById('audio-player').style.display='block';
 	document.getElementById('video-player').style.display='none';
 	document.getElementById('transcript').style.display='block';
@@ -24,6 +30,7 @@ function dispListen() {
 	document.getElementById('listen').style.display='block';
 	document.getElementById('read').style.display='none';
 	document.getElementById('discussion').style.display='none';
+    }
 }
 
 function dispDiscuss() {

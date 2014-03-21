@@ -112,6 +112,6 @@ div.token-input-dropdown ul li.token-input-selected-dropdown-item {
     background-color: #d0efa0;
 }
 
-#live_stream {
+#live_stream, #video_media, #audio_media, #transcript {
     display:none;
 }
