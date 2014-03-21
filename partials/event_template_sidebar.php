@@ -73,7 +73,7 @@
 		<div>
 			<h3>Other <?php echo $current_post_type; ?>s</h3>
 			<?php
-			$loop = new WP_Query( array( 'post_type' => $current_post_type) );
+			$loop = new WP_Query( array( 'post_type' => $current_post_type, "orderby" => "views") );
 			while ( $loop->have_posts() ) : $loop->the_post(); 
 			$meta = get_post_meta(get_the_ID());
 			if (get_the_ID() == $current_post)

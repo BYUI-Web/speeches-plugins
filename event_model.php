@@ -31,7 +31,7 @@ function getPostsBySpeaker($current_post_id) {
 	if ($current_post_presenters[0])
 		$current_post_presenters = explode(', ', $current_post_presenters[0]);
 
-	$loop = new WP_Query( array( 'post_type' => array('devotional', 'forum')) );
+	$loop = new WP_Query( array( 'post_type' => array('devotional', 'forum'), "orderby" => "views") );
 	if ($loop->have_posts()) { 
 		while ($loop->have_posts()) {
 			$loop->the_post();
