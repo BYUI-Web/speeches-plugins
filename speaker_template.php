@@ -52,17 +52,26 @@ $speaker_posts = getPostsBySpeaker($id);
     </div>
     <section class="col-xs-12 col-md-9 speaker-speeches">
         <div class="speeches-inner">
-            <h2 class="speaker-speeches-header">From This Speaker</h2>
+            <h2 class="speaker-speeches-header">FROM THIS SPEAKER</h2>
             <ul class="speaker-speeches-list">
                 <?php foreach ($speaker_posts as $post): ?>
                     <?php
                     $post_title = get_the_title($post);
-                    $post_date = date("F jS, Y", get_post_meta($post, "event_date")[0]);
+                    $post_date = get_post_meta($post, "event_date");
+                    $post_date = $post_date[0];
                     $url = get_permalink($post);
+                    $transcript = get_post_meta($post, "transcript");
+                    $transcript_snippet = substr($transcript[0], 0, 150);
                     ?>
-                    <li>
-                        <a href="<?php echo $url; ?>" class="speaker-post-title"><?php echo $post_title; ?></a>
-                        <p class="speaker-post-date"><?php echo $post_date; ?></p>
+                    <li class="row">
+                        <div class="speaker-post-date col-xs-2">
+                            <p class="speaker-post-day"><?php echo date("d", $post_date); ?></p>
+                            <p class="speaker-post-my"><?php echo date("M Y",$post_date); ?></p>
+                        </div>
+                        <div class="col-xs-10">
+                            <a href="<?php echo $url; ?>" class="speaker-post-title"><?php echo $post_title; ?></a>
+                            <blockquote class="speaker-post-snip"><?php echo $transcript_snippet; ?>...</blockquote>
+                        </div>
                     </li>
                 <?php endforeach; ?>
             </ul>
