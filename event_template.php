@@ -27,7 +27,6 @@ $current_post_type = get_post_type();
             <?php include_once('partials/transcript_discuss.php'); ?>
         </div>
     </div>
-    
 <?php require_once 'partials/event_template_sidebar.php'; ?>
 </div>
 

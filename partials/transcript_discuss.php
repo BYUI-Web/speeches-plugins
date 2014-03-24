@@ -1,18 +1,18 @@
 <?php
-    $title = get_the_title();
-    
+$title = get_the_title();
+
     //we need to build the speaker string
-    $presenters = explode(", ", $presenters);
-    
+$presenters = explode(", ", $presenters);
+
     //get the presenters name
-    $speaker = array();
-    
-    $numSpeakers = count($presenters);
-    for ($i = 0; $i < $numSpeakers; $i++) {
-        $speaker[$i]['name'] = get_the_title($presenters[$i]);
-        $speaker[$i]['title'] = get_post_meta($presenters[$i], 'title')[0];
-    }
-    
+$speaker = array();
+
+$numSpeakers = count($presenters);
+for ($i = 0; $i < $numSpeakers; $i++) {
+    $speaker[$i]['name'] = get_the_title($presenters[$i]);
+    $speaker[$i]['title'] = get_post_meta($presenters[$i], 'title')[0];
+}
+
 ?>
 
 <div class="entry">
@@ -31,7 +31,21 @@
         <p><?php echo wpautop($transcript); ?></p>
     </div>
     <div id="discussion">
-        <!-- <?php comments_template('', true); ?> -->
-    </div>
-    <a href="#top" class="speeches-button">Back to Top</a>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'byuidahospeeches'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+    </noscript>
+        
+</div>
+<a href="#top" class="speeches-button">Back to Top</a>
 </div>
