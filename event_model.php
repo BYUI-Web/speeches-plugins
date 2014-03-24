@@ -104,6 +104,39 @@ function getPostsByTopic($post_id) {
 	return $sameTopicPosts;
 }
 
+/* * *********************************************************** */
+/* * ********* Gets 3 months worth of posts ********** */
+/* * ********* Takes strtotime() version of time ********** */
+/* * ******** Returns 3 months from the beginning of the current month ************ */
+/* * ********************************************************* */
+function getCalendar($now) {
+	$first_month = date('F', $now);
+	$second_month = date('F', strtotime('+1 month'));
+	$third_month = date('F', strtotime('+2 months'));
+	$posts = array( $first_month => array(),
+		$second_month => array(),
+		$third_month => array());
+
+	$loop = new WP_Query( array( 'post_type' => array('devotional', 'forum')) );
+	if ($loop->have_posts()) {
+		while ($loop->have_posts()) { 
+			$loop->the_post();
+			$post_date = get_post_meta( get_the_ID() , 'event_date');
+			$post_month = date('F', $post_date[0]);
+			if ($post_month == $first_month) {
+				array_push($posts[$first_month], get_the_ID());
+			} elseif ($post_month == $second_month) {
+				array_push($posts[$second_month], get_the_ID());
+			} elseif ($post_month == $third_month) {
+				array_push($posts[$third_month], get_the_ID());
+			}
+		}
+	}
+	return $posts;
+}
+
+
+
 /* * ******************************************* */
 /* * ********* Gets Post Speaker/Speakers ********** */
 /* * ********* If second param true returns *********** */
