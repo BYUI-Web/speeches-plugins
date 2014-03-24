@@ -13,6 +13,13 @@ for ($i = 0; $i < $numSpeakers; $i++) {
     $speaker[$i]['title'] = get_post_meta($presenters[$i], 'title')[0];
 }
 
+//check to see if there is a transcript
+if ($transcript_status == "yes") {
+    $transcript = wpautop($transcript);
+} else {
+    $transcript = "";
+}
+
 ?>
 
 <div class="entry">
@@ -27,10 +34,10 @@ for ($i = 0; $i < $numSpeakers; $i++) {
             <?php endforeach; ?>
         </div>
     </div>
-    <div id="transcript">
+    <div id="transcript" <?php echo ($transcript != "") ? "style='display: block;'" : ""; ?> >
         <p><?php echo wpautop($transcript); ?></p>
     </div>
-    <div id="discussion">
+    <div id="discussion" <?php echo ($transcript == "") ? "style='display: block;'" : ""; ?>>
         <div id="disqus_thread"></div>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */

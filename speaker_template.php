@@ -40,7 +40,7 @@ $speaker_posts = getPostsBySpeaker($id);
     <div class="col-xs-12 col-md-3 speaker-image">
         <img src="<?php echo $image; ?>" alt="<?php echo $speakerName; ?>'s Image"/>
     </div>
-    <div class="col-xs-12 col-md-5 speaker-bio-wrapper">
+    <div class="col-xs-12 col-md-9 speaker-bio-wrapper">
         <div class="speaker-name">
             <h2>
                 <?php echo $speakerName; ?>
@@ -50,26 +50,24 @@ $speaker_posts = getPostsBySpeaker($id);
             <?php echo $bio; ?>
         </div>
     </div>
-    <aside class="col-xs-12 col-md-4 speaker-speeches">
-        <div class="aside-holder">
-            <div class="sidebar-inner">
-                <h2 class="speaker-speeches-header">From This Speaker</h2>
-                <ul class="speaker-speeches-list">
-                    <?php foreach ($speaker_posts as $post): ?>
-                        <?php
-                        $post_title = get_the_title($post);
-                        $post_date = date("F jS, Y", get_post_meta($post, "event_date")[0]);
-                        $url = get_permalink($post);
-                        ?>
-                        <li>
-                            <a href="<?php echo $url; ?>" class="speaker-post-title"><?php echo $post_title; ?></a>
-                            <p class="speaker-post-date"><?php echo $post_date; ?></p>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
+    <section class="col-xs-12 col-md-9 speaker-speeches">
+        <div class="speeches-inner">
+            <h2 class="speaker-speeches-header">From This Speaker</h2>
+            <ul class="speaker-speeches-list">
+                <?php foreach ($speaker_posts as $post): ?>
+                    <?php
+                    $post_title = get_the_title($post);
+                    $post_date = date("F jS, Y", get_post_meta($post, "event_date")[0]);
+                    $url = get_permalink($post);
+                    ?>
+                    <li>
+                        <a href="<?php echo $url; ?>" class="speaker-post-title"><?php echo $post_title; ?></a>
+                        <p class="speaker-post-date"><?php echo $post_date; ?></p>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
         </div>
-    </aside>
+    </section>
 </div>
 
 <?php get_footer();

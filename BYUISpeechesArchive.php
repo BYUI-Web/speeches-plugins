@@ -153,12 +153,26 @@ function speakers_metaboxes() {
     // Get the location data if its already been entered
     $title = get_post_meta($post->ID, 'title', true);
     $speaker_bio = get_post_meta($post->ID, 'speaker_bio', true);
+    $facebook = get_post_meta($post->ID, 'facebook', true);
+    $twitter = get_post_meta($post->ID, 'twitter', true);
+    $google_plus = get_post_meta($post->ID, 'google_plus', true);
+    $website = get_post_meta($post->ID, 'website', true);
 
     // Echo out the field
     echo '<p>Speaker Title and Department (if relevant): </p>';
     echo '<input type="text" name="title" class="widefat" value="' . $title . '">';
     echo '<p>Speaker Bio: </p>';
     echo '<textarea name="speaker_bio" rows="10" class="widefat">' . $speaker_bio . '</textarea>';
+    echo '<h2>Social Media</h2>';
+    echo '<p>Facebook</p>';
+    echo '<input type="text" name="facebook" class="widefat" value="' . $facebook . '"/>';
+    echo '<p>Twitter</p>';
+    echo '<input type="text" name="twitter" class="widefat" value="' . $twitter . '"/>';
+    echo '<p>Google+</p>';
+    echo '<input type="text" name="google_plus" class="widefat" value="' . $google_plus . '"/>';
+    echo '<p>Website</p>';
+    echo '<input type="text" name="website" class="widefat" value="' . $website . '"/>';
+    
 }
 
 // The Event Location Metabox
@@ -339,6 +353,10 @@ function save_speaker_meta($post_id, $post) {
     // We'll put it into an array to make it easier to loop though.
     $speaker_meta['title'] = $_POST['title'];
     $speaker_meta['speaker_bio'] = $_POST['speaker_bio'];
+    $speaker_meta['facebook'] = $_POST['facebook'];
+    $speaker_meta['twitter'] = $_POST['twitter'];
+    $speaker_meta['google_plus'] = $_POST['google_plus'];
+    $speaker_meta['website'] = $_POST['website'];
 
     // Add values of $speaker_meta as custom fields
     foreach ($speaker_meta as $key => $value) {
