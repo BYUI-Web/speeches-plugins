@@ -5,9 +5,8 @@
  * Plugin URI: http://mayanmediagroup.com
  * Description: Speeches Directory Plugin
  * Version: 0.1
- * Author: Josh Crowther
- * Author URI: http://joshcrowther.com
- * License: OSS
+ * Author: Josh Crowther, Matt Sessions
+ * License: BSD-2-Clause
  */
 function admin_dependencies() {
     echo '<link rel="stylesheet" href="' . plugins_url('css/token-input.css', __FILE__) . '">';
@@ -469,4 +468,42 @@ function add_custom_post_types_to_loop($query) {
 // Show posts of 'post', 'page' and 'movie' post types on home page
 add_action('pre_get_posts', 'add_custom_post_types_to_loop');
 
+function events_rss( $for_comments ) {
+    $rss_template = dirname(__FILE__) . '/rss_template.php';
+    if(  file_exists( $rss_template ) )
+        load_template( $rss_template );
+    else
+        do_feed_rss2( $for_comments ); // Call default function
+}
+remove_all_actions( 'do_feed_rss2' );
+add_action( 'do_feed_rss2', 'events_rss', 10, 1 );
+
+//Template fallback
+add_action("template_redirect", 'my_theme_redirect');
+
+function my_theme_redirect() {
+    global $wp;
+    $plugindir = dirname( __FILE__ );
+
+   //A Simple Page
+    if ($wp->query_vars["pagename"] == 'calendar') {
+        $templatefilename = 'event_calendar.php';
+        if (file_exists(TEMPLATEPATH . '/' . $templatefilename)) {
+            $return_template = TEMPLATEPATH . '/' . $templatefilename;
+        } else {
+            $return_template = $plugindir . '/' . $templatefilename;
+        }
+        do_theme_redirect($return_template);
+    }
+}
+
+function do_theme_redirect($url) {
+    global $post, $wp_query;
+    if (have_posts()) {
+        include($url);
+        die();
+    } else {
+        $wp_query->is_404 = true;
+    }
+}
 ?>
