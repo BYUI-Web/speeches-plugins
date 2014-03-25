@@ -21,6 +21,7 @@
     "concat": "~0.2.4",
     "gulp-uglify": "~0.2.1",
     "gulp-rename": "~1.2.0",
-    "gulp-concat": "~2.2.0"
+    "gulp-concat": "~2.2.0",
+    "gulp-notify": "~1.2.1"
   }
 }

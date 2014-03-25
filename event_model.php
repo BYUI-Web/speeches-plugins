@@ -135,6 +135,76 @@ function getCalendar($now) {
 	return $posts;
 }
 
+/* * *********************************************************** */
+/* * ********* Gets $post_count worth of posts ********** */
+/* * ******** Returns $post_count posts in order of fastest occuring ************ */
+/* * ********************************************************* */
+function getUpcoming($post_count, $post_type) {
+	$upcoming_posts = array();
+	$now = strtotime('now');
+	$args = array(
+            'post_type' => $post_type,
+            'meta_key' => 'event_date',
+            'orderby' => 'meta_value_num',
+            'order' => 'ASC',
+            'meta_query' => array(
+                    array(
+                        'key' => 'event_date',
+                        'value' => $now,
+                        'compare' => '>',
+                        'type' => 'NUMERIC'
+                    )                   
+                ),
+        ); 
+	$loop = new WP_Query( $args );
+	$counter = 0;
+	if ($loop->have_posts()) {
+		while ($loop->have_posts()) { 
+			$loop->the_post();
+			if ( array_push($upcoming_posts, get_the_ID()) )
+				$counter++;
+			if ($counter == $post_count)
+				break;
+		}
+	}
+	return $upcoming_posts;
+}
+
+/* * *********************************************************** */
+/* * ********* Gets $post_count worth of posts ********** */
+/* * ******** Returns $post_count posts in order of most recent ************ */
+/* * ********************************************************* */
+function getRecent($post_count, $post_type) {
+	$upcoming_posts = array();
+	$now = strtotime('now');
+	$args = array(
+            'post_type' => $post_type,
+            'meta_key' => 'event_end_time',
+            'orderby' => 'meta_value_num',
+            'order' => 'ASC',
+            'meta_query' => array(
+                    array(
+                        'key' => 'event_end_time',
+                        'value' => $now,
+                        'compare' => '<',
+                        'type' => 'NUMERIC'
+                    )                   
+                ),
+        ); 
+	$loop = new WP_Query( $args );
+	$counter = 0;
+	if ($loop->have_posts()) {
+		while ($loop->have_posts()) { 
+			$loop->the_post();
+			if ( array_push($upcoming_posts, get_the_ID()) )
+				$counter++;
+			if ($counter == $post_count)
+				break;
+		}
+	}
+	return $upcoming_posts;
+}
+
 
 
 /* * ******************************************* */
@@ -209,9 +279,19 @@ function getSpeakerBio($post_id) {
 /* * ********* Formatted for output ********** */
 /* * ******************************************* */
 function getPostTime($post_id) {
-	$post_date = get_post_meta($post_id, 'event_date');
-	return date('l, F jS, Y \a\t g:i A', $post_time[0]);
+	$post_date = get_post_meta($post_id, 'event_date', true);
+	return date('l, F jS, Y \a\t g:i A', $post_date);
 }
+
+/* * ******************************************* */
+/* * ********* Gets The Post Time ********** */
+/* * ********* Formatted for output ********** */
+/* * ******************************************* */
+function getShortDate($post_id) {
+	$post_date = get_post_meta($post_id, 'event_date', true);
+	return date('M d', $post_date);
+}
+
 
 /* * ******************************************* */
 /* * ********* Gets The Post Location ********** */

@@ -1,6 +1,6 @@
 <aside class="col-xs-12 col-sm-4">
 	<div class="aside-holder">
-		<div class="sidebar-inner event-details">
+		<div class="sidebar-inner group event-details">
 			<h2>Event Details</h2>
 			<ul>
 				<li><span>Event Type: </span>BYU-Idaho <?php echo $current_post_type; ?></li>
@@ -17,7 +17,7 @@
 				</li>
 			</ul>
 		</div>
-		<div class="sidebar-inner speaker-bio">
+		<div class="sidebar-inner group speaker-bio">
 			<?php foreach ($presenters as $person) : ?>
 
 				<h2>Speaker Bio</h2>
@@ -35,7 +35,7 @@
 				</div>
 			<?php endforeach; ?>
 		</div>
-		<div class="sidebar-inner sidebar-featured-speeches">
+		<div class="sidebar-inner group sidebar-featured-speeches">
 			<h2>Related Speeches</h2>
 			<div>
 				<h3>By this Speaker</h3>
