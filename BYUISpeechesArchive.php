@@ -468,7 +468,7 @@ function get_custom_post_type_template($archive_template) {
     global $post;
 
     if (is_post_type_archive('devotional')) {
-        $archive_template = dirname(__FILE__) . '/event_archive.php';
+        $archive_template = dirname(__FILE__) . '/event_home.php';
     }
     return $archive_template;
 }
@@ -496,10 +496,7 @@ function events_rss( $for_comments ) {
 remove_all_actions( 'do_feed_rss2' );
 add_action( 'do_feed_rss2', 'events_rss', 10, 1 );
 
-//Template fallback
-add_action("template_redirect", 'my_theme_redirect');
-
-function my_theme_redirect() {
+function indv_pages() {
     global $wp;
     $plugindir = dirname( __FILE__ );
 
@@ -513,7 +510,18 @@ function my_theme_redirect() {
         }
         do_theme_redirect($return_template);
     }
+    if ($wp->query_vars["pagename"] == 'archive') {
+        $templatefilename = 'event_archive.php';
+        if (file_exists(TEMPLATEPATH . '/' . $templatefilename)) {
+            $return_template = TEMPLATEPATH . '/' . $templatefilename;
+        } else {
+            $return_template = $plugindir . '/' . $templatefilename;
+        }
+        do_theme_redirect($return_template);
+    }
 }
+
+add_action("template_redirect", 'indv_pages');
 
 function do_theme_redirect($url) {
     global $post, $wp_query;
