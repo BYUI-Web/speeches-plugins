@@ -50,7 +50,7 @@ $speaker_posts = getPostsBySpeaker($id);
             <?php echo $bio; ?>
         </div>
     </div>
-    <section class="col-xs-12 col-md-9 speaker-speeches">
+    <section class="col-xs-12 speaker-speeches">
         <div class="speeches-inner">
             <h2 class="speaker-speeches-header">FROM THIS SPEAKER</h2>
             <ul class="speaker-speeches-list">
