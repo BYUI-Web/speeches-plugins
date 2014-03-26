@@ -6,7 +6,7 @@ $calendar = getCalendar(strtotime('now'));
 ?>
 <div class="row">
     <div class="col-xs-12">
-        <h1>Speeches Calendar</h1>
+        <h1 class="">Speeches Calendar</h1>
         <div class="calendar-switch">
             <a href="#timeline" class="btn btn-speeches">Timeline</a>
             <a href="#calendar" class="btn btn-speeches cal-active">Calendar</a>

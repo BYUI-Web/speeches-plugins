@@ -144,172 +144,168 @@ function getCalendar($now) {
 /* * ********* Gets $post_count worth of posts ********** */
 /* * ******** Returns $post_count posts in order of fastest occuring ************ */
 /* * ********************************************************* */
+function getUpcoming($post_type, $post_count = 'all') {
+	$upcoming_posts = array();
+	$now = strtotime('now');
+	$args = array(
+		'post_type' => $post_type,
+		'meta_key' => 'event_date',
+		'orderby' => 'meta_value_num',
+		'order' => 'ASC',
+		'meta_query' => array(
+			array(
+				'key' => 'event_date',
+				'value' => $now,
+				'compare' => '>',
+				'type' => 'NUMERIC'
+				)                   
+			),
+		); 
+	$loop = new WP_Query( $args );
+	$counter = 0;
+	if ($loop->have_posts()) {
+		while ($loop->have_posts()) { 
+			$loop->the_post();
+			if ( array_push($upcoming_posts, get_the_ID()) )
+				$counter++;
+			if ($post_count != 'all')
+				if ($counter == $post_count)
+					break;
+			}
+		}
+		return $upcoming_posts;
+	}
 
-function getUpcoming($post_count, $post_type) {
-    $upcoming_posts = array();
-    $now = strtotime('now');
-    $args = array(
-        'post_type' => $post_type,
-        'meta_key' => 'event_date',
-        'orderby' => 'meta_value_num',
-        'order' => 'ASC',
-        'meta_query' => array(
-            array(
-                'key' => 'event_date',
-                'value' => $now,
-                'compare' => '>',
-                'type' => 'NUMERIC'
-            )
-        ),
-    );
-    $loop = new WP_Query($args);
-    $counter = 0;
-    if ($loop->have_posts()) {
-        while ($loop->have_posts()) {
-            $loop->the_post();
-            if (array_push($upcoming_posts, get_the_ID()))
-                $counter++;
-            if ($counter == $post_count)
-                break;
-        }
-    }
-    return $upcoming_posts;
-}
+	/* * *********************************************************** */
+	/* * ********* Gets $post_count worth of posts ********** */
+	/* * ******** Returns $post_count posts in order of most recent ************ */
+	/* * ********************************************************* */
+	function getRecent($post_count, $post_type) {
+		$upcoming_posts = array();
+		$now = strtotime('now');
+		$args = array(
+			'post_type' => $post_type,
+			'meta_key' => 'event_end_time',
+			'orderby' => 'meta_value_num',
+			'order' => 'ASC',
+			'meta_query' => array(
+				array(
+					'key' => 'event_end_time',
+					'value' => $now,
+					'compare' => '<',
+					'type' => 'NUMERIC'
+					)                   
+				),
+			); 
+		$loop = new WP_Query( $args );
+		$counter = 0;
+		if ($loop->have_posts()) {
+			while ($loop->have_posts()) { 
+				$loop->the_post();
+				if ( array_push($upcoming_posts, get_the_ID()) )
+					$counter++;
+				if ($counter == $post_count)
+					break;
+			}
+		}
+		return $upcoming_posts;
+	}
 
-/* * *********************************************************** */
-/* * ********* Gets $post_count worth of posts ********** */
-/* * ******** Returns $post_count posts in order of most recent ************ */
-/* * ********************************************************* */
 
-function getRecent($post_count, $post_type) {
-    $upcoming_posts = array();
-    $now = strtotime('now');
-    $args = array(
-        'post_type' => $post_type,
-        'meta_key' => 'event_end_time',
-        'orderby' => 'meta_value_num',
-        'order' => 'ASC',
-        'meta_query' => array(
-            array(
-                'key' => 'event_end_time',
-                'value' => $now,
-                'compare' => '<',
-                'type' => 'NUMERIC'
-            )
-        ),
-    );
-    $loop = new WP_Query($args);
-    $counter = 0;
-    if ($loop->have_posts()) {
-        while ($loop->have_posts()) {
-            $loop->the_post();
-            if (array_push($upcoming_posts, get_the_ID()))
-                $counter++;
-            if ($counter == $post_count)
-                break;
-        }
-    }
-    return $upcoming_posts;
-}
 
-/* * ******************************************* */
-/* * ********* Gets Post Speaker/Speakers ********** */
-/* * ********* If second param true returns *********** */
-/* * ********* Array of speakers otherwise  ********** */
-/* * ********* just first speaker ********** */
-/* * ******************************************* */
+	/* * ******************************************* */
+	/* * ********* Gets Post Speaker/Speakers ********** */
+	/* * ********* If second param true returns *********** */
+	/* * ********* Array of speakers otherwise  ********** */
+	/* * ********* just first speaker ********** */
+	/* * ******************************************* */
+	function getSpeaker($post_id, $returnAll = false) {
+		$speakers;
+		$speaker_id = get_post_meta($post_id, 'presenters');
+		if ($speaker_id) {
+			$speakers = explode(', ', $speaker_id);
+		}
+		if ($returnAll && $speakers) {
+			$speaker_names = array();
+			foreach ($speakers as $indv_speaker) {
+				array_push($speaker_names, get_the_title($indv_speaker));
+			}
+			return $speaker_names;
+		}
+		return get_the_title($speaker_id[0]);
+	}
 
-function getSpeaker($post_id, $returnAll = false) {
-    $speakers;
-    $speaker_id = get_post_meta($post_id, 'presenters');
-    if ($speaker_id) {
-        $speakers = explode(', ', $speaker_id);
-    }
-    if ($returnAll && $speakers) {
-        $speaker_names = array();
-        foreach ($speakers as $indv_speaker) {
-            array_push($speaker_names, get_the_title($indv_speaker));
-        }
-        return $speaker_names;
-    }
-    return get_the_title($speaker_id[0]);
-}
+	/* * ******************************************* */
+	/* * ********* Gets Post Speaker/Speakers ********** */
+	/* * ********* If second param true returns *********** */
+	/* * ********* Array of speakers otherwise  ********** */
+	/* * ********* just first speaker ********** */
+	/* * ******************************************* */
 
-/* * ******************************************* */
-/* * ********* Gets Post Speaker/Speakers ********** */
-/* * ********* If second param true returns *********** */
-/* * ********* Array of speakers otherwise  ********** */
-/* * ********* just first speaker ********** */
-/* * ******************************************* */
+// function getSpeakerTitle($post_id, $returnAll = false) {
+// 	$speakers;
+// 	$speaker_id = get_post_meta($post_id, 'presenters');
+// 	if ($speaker_id) {
+// 		$speakers = explode(', ', $speaker_id);
+// 	}
+// 	if ($returnAll && $speakers) {
+// 		$speaker_names = array();
+// 		foreach ($speakers as $indv_speaker) {
+// 			array_push($speaker_names, get_the_title($indv_speaker));
+// 		}
+// 		return $speaker_names;
+// 	}
+// 	$speaker_title = get_post_meta($speaker_id[0], 'title');
+// 	return $speaker_title[0];
+// }
 
-function getSpeakerTitle($post_id, $returnAll = false) {
-    $speakers;
-    $speaker_id = get_post_meta($post_id, 'presenters');
-    if ($speaker_id) {
-        $speakers = explode(', ', $speaker_id);
-    }
-    if ($returnAll && $speakers) {
-        $speaker_names = array();
-        foreach ($speakers as $indv_speaker) {
-            array_push($speaker_names, get_the_title($indv_speaker));
-        }
-        return $speaker_names;
-    }
-    $speaker_title = get_post_meta($speaker_id[0], 'title');
-    return $speaker_title[0];
-}
+	/* * ******************************************* */
+	/* * ********* Gets Post Speaker/Speakers ********** */
+	/* * ********* If second param true returns *********** */
+	/* * ********* Array of speakers otherwise  ********** */
+	/* * ********* just first speaker ********** */
+	/* * ******************************************* */
+	function getSpeakerBio($post_id) {
+		$speaker_id = get_post_meta($post_id, 'speaker_bio');
+		if ($speaker_id) {
+			$speakers = explode(', ', $speaker_id);
+		}
+		if ($returnAll && $speakers) {
+			$speaker_names = array();
+			foreach ($speakers as $indv_speaker) {
+				array_push($speaker_names, get_the_title($indv_speaker));
+			}
+			return $speaker_names;
+		}
+		$speaker_title = get_post_meta($speaker_id[0], 'title');
+		return $speaker_title[0];
+	}
 
-/* * ******************************************* */
-/* * ********* Gets Post Speaker/Speakers ********** */
-/* * ********* If second param true returns *********** */
-/* * ********* Array of speakers otherwise  ********** */
-/* * ********* just first speaker ********** */
-/* * ******************************************* */
+	/* * ******************************************* */
+	/* * ********* Gets The Post Time ********** */
+	/* * ********* Formatted for output ********** */
+	/* * ******************************************* */
+	function getPostTime($post_id) {
+		$post_date = get_post_meta($post_id, 'event_date', true);
+		return date('l, F jS, Y \a\t g:i A', $post_date);
+	}
 
-function getSpeakerBio($post_id) {
-    $speaker_id = get_post_meta($post_id, 'speaker_bio');
-    if ($speaker_id) {
-        $speakers = explode(', ', $speaker_id);
-    }
-    if ($returnAll && $speakers) {
-        $speaker_names = array();
-        foreach ($speakers as $indv_speaker) {
-            array_push($speaker_names, get_the_title($indv_speaker));
-        }
-        return $speaker_names;
-    }
-    $speaker_title = get_post_meta($speaker_id[0], 'title');
-    return $speaker_title[0];
-}
+	/* * ******************************************* */
+	/* * ********* Gets The Post Time ********** */
+	/* * ********* Formatted for output ********** */
+	/* * ******************************************* */
+	function getShortDate($post_id) {
+		$post_date = get_post_meta($post_id, 'event_date', true);
+		return date('M d', $post_date);
+	}
 
-/* * ******************************************* */
-/* * ********* Gets The Post Time ********** */
-/* * ********* Formatted for output ********** */
-/* * ******************************************* */
 
-function getPostTime($post_id) {
-    $post_date = get_post_meta($post_id, 'event_date', true);
-    return date('l, F jS, Y \a\t g:i A', $post_date);
-}
-
-/* * ******************************************* */
-/* * ********* Gets The Post Time ********** */
-/* * ********* Formatted for output ********** */
-/* * ******************************************* */
-
-function getShortDate($post_id) {
-    $post_date = get_post_meta($post_id, 'event_date', true);
-    return date('M d', $post_date);
-}
-
-/* * ******************************************* */
-/* * ********* Gets The Post Location ********** */
-/* * ********* return for output ********** */
-/* * ******************************************* */
-
-function getEventLocation($post_id) {
-    $location = get_post_meta($post_id, 'event_location');
-    return $location[0];
-}
-
-?>
+	/* * ******************************************* */
+	/* * ********* Gets The Post Location ********** */
+	/* * ********* return for output ********** */
+	/* * ******************************************* */
+	function getEventLocation($post_id) {
+		$location = get_post_meta($post_id, 'event_location');
+		return $location[0];
+	}
+	?>

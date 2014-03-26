@@ -2,35 +2,68 @@
 
 // Include Model
 require_once 'event_model.php';
-$next_post = getUpcoming(1,'devotional');
+$archive = array();
+$now = strtotime('now');
+$args = array(
+	'post_type' => 'devotional',
+	'meta_key' => 'event_date',
+	'orderby' => 'meta_value_num',
+	'order' => 'ASC'
+	); 
+$loop = new WP_Query( $args );
+if ($loop->have_posts()) {
+	while ($loop->have_posts()) { 
+		$loop->the_post();
+		array_push($archive, get_the_ID());
+	}
+}
 get_header();
-
 ?>
+<script type="text/javascript">
+	posts = [];
+	<?php
+	foreach ($archive as $id)
+		echo 'posts.push({ "id":'.$id.', "postType":"'. get_post_type( $id ) .'", "month":"'. date( 'F', get_post_meta($id, 'event_date', true)) .'", "year":"'.date( 'Y', get_post_meta($id, 'event_date', true)).'"});';
+	?>
+	function updateList() {
+		var toShow = jQuery.grep(posts, function( a ) {
+			if (document.getElementById('post_type').value == 'all')
+				return true;
+			else
+				return ( document.getElementById('post_type').value == a.postType );
+		});
+		for (i in posts) {
+			document.getElementById('post-' + posts[i].id).style.display="none";
+		}
+		for (i in toShow) {
+			document.getElementById('post-' + toShow[i].id).style.display="block";
+		}
+	}
+</script>
 <div class="row">
-	<div class="col-xs-12 col-sm-8">
-		<div <?php post_class() ?> id="post-<?php the_ID(); ?>">
-		<div class="archive-feature">
-		<img src="http://lorempixel.com/400/300">
-			<div class="info-banner">
-			<p>Attend this event or watch the live stream on <?php echo getPostTime($next_post[0]); ?> MST</p>
+	<div class="col-xs-12">
+		<div>
+			<select id="post_type" onchange="updateList()">
+				<option value="all">-</option>
+				<option value="devotional">Devotionals</option>
+				<option value="forum">Forum</option>
+			</select>
+		</div>
+		<hr>
+		<?php foreach ($archive as $post) : ?>
+			<div id="post-<?php echo $post; ?>" class="post-archive group" style="display:none;">
+				<span><?php echo date( 'd', get_post_meta($post, 'event_date', true)) ?></span>
+				<div>
+					<a href="<?php echo get_permalink($post); ?>"><h2><span><?php echo get_post_type($post) ?> - </span><?php echo get_the_title($post); ?></h2></a>
+					<p><?php echo getSpeaker($post); ?></p>
+					<p class="meta"><?php echo getSpeakerTitle($post); ?></p>
+				</div>
 			</div>
-		</div>
-			<h1>The Importance of Devotional</h1>
-			<p>
-				Devotionals are special worship services and an important setting for studying the doctrines and principles of the restored gospel. Each week, speakers and many other individuals strive to provide a meaningful experience where the Spirit can teach and enlighten us. Because of its special nature, it is important that each of us come to Devotional prepared and ready to learn. In doing so, you will help create an environment in which the Holy Ghost can minister and lift not only you, but also all who are gathered to be taught.
-			</p>
-			<p>
-				To help with your preparation, the scriptures to be cited in each address, as well as other helpful materials, are available online at www.byui.edu/devotionals for you to study in advance. Bringing scriptures to Devotional further confirms your preparedness and willingness to be taught. Each week you will have the opportunity to indicate the availability of your scriptures.
-			</p>
-			<p>
-				In addition, we strongly desire and encourage you to come dressed in your Sunday best. Wearing appropriate attire is another important signal to the Lord that you recognize the importance of being taught by the Spirit. Your effort to come in the best clothing you have influences the ministry of the Holy Ghost, the speaker, and the learn- ing. A few of you work or have other circumstances and cannot dress up for Devotional. All are welcome, yet hope you will dress up when you have the opportunity and make Tuesday a day to dress for Devotional.
-			</p>
-			<p>
-				Attending Devotional each week is an important part of a BYU-Idaho education. Both students and employees are encouraged to attend. The university’s departments and offices operate with a minimal staff to facilitate participa- tion by as many individuals as possible. As you make Devotional a part of your regular study and worship—your life will be enriched.
-			</p>
-		</div>
-	</div>
-	<?php require_once 'partials/event_archive_sidebar.php'; ?>
-</div>
+		<?php endforeach; ?>
 
+	</div>
+</div>
+<script type="text/javascript">
+	window.onload = updateList();
+</script>
 <?php get_footer(); ?>
