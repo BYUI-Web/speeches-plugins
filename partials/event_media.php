@@ -11,7 +11,6 @@
 $post_status = postTimeStatus(get_the_ID());
 //has the event already past?
 if ($post_status == "past") {
-    echo "<h1>Worked</h1>";
     //check to see if the video has been provided
     if ($video_status == "yes") {
         $video_player = $video_embed;
