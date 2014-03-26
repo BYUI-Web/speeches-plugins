@@ -11,6 +11,7 @@
 $post_status = postTimeStatus(get_the_ID());
 //has the event already past?
 if ($post_status == "past") {
+    echo "<h1>Worked</h1>";
     //check to see if the video has been provided
     if ($video_status == "yes") {
         $video_player = $video_embed;
@@ -27,10 +28,8 @@ else if ($post_status == "present") {
     }
     //if not then we must show the generic banner
     else {
-        $video_player = "<p>This event is currently not available. Attend the event ";
-        if ($live_stream == "yes") {
-            $video_player .= "or watch the live stream ";
-        }
+        $video_player = "<img src='/wp-content/themes/speeches-theme/images/speech-banner.jpg'/>";
+        $video_player .= "<p>This event is currently not available. Attend the event ";
         $video_player .= "on " . date('l, F jS, Y \a\t g:i A', $event_date) . "</p>";
     }
 }
@@ -38,7 +37,8 @@ else if ($post_status == "present") {
 else {
     //we need some sort of banner to display instead of just text
     //Reanna is working on that
-    $video_player = "<p>This event is currently not available. Attend the event ";
+    $video_player = "<img src='/wp-content/themes/speeches-theme/images/speech-banner.jpg'/>";
+    $video_player .= "<p>This event is currently not available. Attend the event ";
     if ($live_stream == "yes") {
         $video_player .= "or watch the live stream";
     }
@@ -49,10 +49,10 @@ else {
 <div class="event-featured">
     <div>
         <div id="video-player">
-<?php echo $video_player; ?>
+            <?php echo $video_player; ?>
         </div>
         <div id="audio-player">
-<?php echo $audio_player; ?>
+            <?php echo $audio_player; ?>
         </div>
     </div>
     <div class="additional-featured group">
