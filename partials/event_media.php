@@ -14,9 +14,19 @@ if ($post_status == "past") {
     //check to see if the video has been provided
     if ($video_status == "yes") {
         $video_player = $video_embed;
+    } else if ($video_status == "not_yet") {
+        $video_player = "<img src='/wp-content/themes/speeches-theme/images/speech-banner.jpg'/>";
+        $video_player .= "<p>The video for this event is not yet available. Please check back later.</p>";
+    } else if ($video_status == "never") {
+        $video_player = "<img src='/wp-content/themes/speeches-theme/images/speech-banner.jpg'/>";
+        $video_player .= "<p>There will not be a video provided for this event.</p>";
     }
     if ($audio_status == "yes") {
         $audio_player = $audio_embed;
+    } else if ($audio_status == "not_yet") {
+        $audio_player = "<p>The audio for this event is not yet available. Please check back later.</p>";
+    } else if ($audio_status == "never") {
+        $audio_player = "<p>There will not be audio provided for this event.</p>";
     }
 }
 //could be during the event

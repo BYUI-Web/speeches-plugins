@@ -16,10 +16,11 @@ for ($i = 0; $i < $numSpeakers; $i++) {
 //check to see if there is a transcript
 if ($transcript_status == "yes") {
     $transcript = wpautop($transcript);
-} else {
-    $transcript = "";
+} else if ($transcript_status == "not_yet") {
+    $transcript = "<h3>The transcript is not yet available. Please check back later.</h3>";
+} else if ($transcript_status == "never") {
+    $transcript = "<h3>There will not be a transcript provided for this event.</h3>";
 }
-
 ?>
 
 <div class="entry">
@@ -34,10 +35,10 @@ if ($transcript_status == "yes") {
             <?php endforeach; ?>
         </div>
     </div>
-    <div id="transcript" <?php echo ($transcript != "") ? "style='display: block;'" : ""; ?> >
+    <div id="transcript" <?php echo ($transcript_status != "yes") ? "style='display: none;'" : ""; ?> >
         <p><?php echo wpautop($transcript); ?></p>
     </div>
-    <div id="discussion" <?php echo ($transcript == "") ? "style='display: block;'" : ""; ?>>
+    <div id="discussion" <?php echo ($transcript_status != "yes") ? "style='display: block;'" : ""; ?>>
         <div id="disqus_thread"></div>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
