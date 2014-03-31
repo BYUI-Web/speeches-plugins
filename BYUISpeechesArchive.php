@@ -357,6 +357,12 @@ function save_speaker_meta($post_id, $post) {
     $speaker_meta['google_plus'] = $_POST['google_plus'];
     $speaker_meta['website'] = $_POST['website'];
 
+    $speaker_meta['first_name'] = '';
+    $name = explode(' ', $post->title);
+    for ($i = 0; $i < (count($name) - 1); $i++) {
+        $speaker_meta['first_name'] += $name[$i];
+    }
+    $speaker_meta['last_name'] = $name[count($name)-1];
     // Add values of $speaker_meta as custom fields
     foreach ($speaker_meta as $key => $value) {
         if ($post->post_type == 'revision')

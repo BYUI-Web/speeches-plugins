@@ -7,17 +7,17 @@
 /* * ******************************************* */
 
 function postTimeStatus($post_id) {
-    date_default_timezone_set('America/Denver');
-    $now = strtotime('now');
-    $post_start_time = get_post_meta($post_id, 'event_date');
-    $post_end_time = get_post_meta($post_id, 'event_end_time');
-    if ($now > $post_end_time[0]) {
-        return 'past';
-    } elseif ($now > $post_start_time) {
-        return 'current';
-    } else {
-        return 'future';
-    }
+	date_default_timezone_set('America/Denver');
+	$now = strtotime('now');
+	$post_start_time = get_post_meta($post_id, 'event_date');
+	$post_end_time = get_post_meta($post_id, 'event_end_time');
+	if ($now > $post_end_time[0]) {
+		return 'past';
+	} elseif ($now > $post_start_time) {
+		return 'current';
+	} else {
+		return 'future';
+	}
 }
 
 /* * *********************************************************** */
@@ -27,44 +27,44 @@ function postTimeStatus($post_id) {
 /* * ********************************************************* */
 
 function getPostsBySpeaker($current_post_id) {
-    $speakerPosts = array();
-    $counter = 0;
-    $current_post_presenters = get_post_meta($current_post_id, 'presenters');
+	$speakerPosts = array();
+	$counter = 0;
+	$current_post_presenters = get_post_meta($current_post_id, 'presenters');
 
-    if ($current_post_presenters[0])
-        $current_post_presenters = explode(', ', $current_post_presenters[0]);
+	if ($current_post_presenters[0])
+		$current_post_presenters = explode(', ', $current_post_presenters[0]);
 
-    $loop = new WP_Query(array('post_type' => array('devotional', 'forum'), "orderby" => "views"));
-    if ($loop->have_posts()) {
-        while ($loop->have_posts()) {
-            $loop->the_post();
-            $post_id = get_the_ID();
-            $loop_presenters = get_post_meta(get_the_ID(), 'presenters');
-            if ($loop_presenters[0])
-                $loop_presenters = explode(', ', $loop_presenters[0]);
-            foreach ($loop_presenters as $test) {
-                foreach ($current_post_presenters as $comp) {
-                    if ($test == $comp) {
-                        if ($post_id != $current_post_id) {
-                            $add = true;
-                            foreach ($speakerPosts as $toAdd) {
-                                if ($toAdd == $post_id)
-                                    $add = false;
-                            }
-                            if ($add)
-                                array_push($speakerPosts, $post_id);
-                        }
-                    }
-                }
-            }
-            if (count($speakerPosts) == 2)
-                break;
-        }
-    }
-    if (($speakerPosts))
-        return $speakerPosts;
-    else
-        return "No Posts Found";
+	$loop = new WP_Query(array('post_type' => array('devotional', 'forum'), "orderby" => "views"));
+	if ($loop->have_posts()) {
+		while ($loop->have_posts()) {
+			$loop->the_post();
+			$post_id = get_the_ID();
+			$loop_presenters = get_post_meta(get_the_ID(), 'presenters');
+			if ($loop_presenters[0])
+				$loop_presenters = explode(', ', $loop_presenters[0]);
+			foreach ($loop_presenters as $test) {
+				foreach ($current_post_presenters as $comp) {
+					if ($test == $comp) {
+						if ($post_id != $current_post_id) {
+							$add = true;
+							foreach ($speakerPosts as $toAdd) {
+								if ($toAdd == $post_id)
+									$add = false;
+							}
+							if ($add)
+								array_push($speakerPosts, $post_id);
+						}
+					}
+				}
+			}
+			if (count($speakerPosts) == 2)
+				break;
+		}
+	}
+	if (($speakerPosts))
+		return $speakerPosts;
+	else
+		return "No Posts Found";
 }
 
 /* * *********************************************************** */
@@ -74,38 +74,38 @@ function getPostsBySpeaker($current_post_id) {
 /* * ********************************************************* */
 
 function getPostsByTopic($post_id) {
-    $current_post_tags = get_the_tags($post_id);
-    $sameTopicPosts = array();
-    $counter = 0;
-    $loop = new WP_Query(array('post_type' => array('devotional', 'forum')));
-    if ($loop->have_posts()) {
-        while ($loop->have_posts()) {
-            $loop->the_post();
-            $tags = get_the_tags();
+	$current_post_tags = get_the_tags($post_id);
+	$sameTopicPosts = array();
+	$counter = 0;
+	$loop = new WP_Query(array('post_type' => array('devotional', 'forum')));
+	if ($loop->have_posts()) {
+		while ($loop->have_posts()) {
+			$loop->the_post();
+			$tags = get_the_tags();
 
-            foreach ($tags as $tag) {
-                foreach ($current_post_tags as $tagTest) {
-                    if ($tag->name == $tagTest->name) {
-                        $counter++;
-                        if (!(get_the_ID() == $current_post)) {
-                            $toAdd = get_the_ID();
-                            $exists = false;
-                            foreach ($sameTopicPosts as $id) {
-                                if ($id == $toAdd)
-                                    $exists = true;
-                            }
-                            if (!$exists) {
-                                if (count($sameTopicPosts) < 2)
-                                    array_push($sameTopicPosts, $toAdd);
-                            }
-                        }
-                        continue;
-                    }
-                }
-            }
-        }
-    }
-    return $sameTopicPosts;
+			foreach ($tags as $tag) {
+				foreach ($current_post_tags as $tagTest) {
+					if ($tag->name == $tagTest->name) {
+						$counter++;
+						if (!(get_the_ID() == $current_post)) {
+							$toAdd = get_the_ID();
+							$exists = false;
+							foreach ($sameTopicPosts as $id) {
+								if ($id == $toAdd)
+									$exists = true;
+							}
+							if (!$exists) {
+								if (count($sameTopicPosts) < 2)
+									array_push($sameTopicPosts, $toAdd);
+							}
+						}
+						continue;
+					}
+				}
+			}
+		}
+	}
+	return $sameTopicPosts;
 }
 
 /* * *********************************************************** */
@@ -115,29 +115,29 @@ function getPostsByTopic($post_id) {
 /* * ********************************************************* */
 
 function getCalendar($now) {
-    $first_month = date('F', $now);
-    $second_month = date('F', strtotime('+1 month'));
-    $third_month = date('F', strtotime('+2 months'));
-    $posts = array($first_month => array(),
-        $second_month => array(),
-        $third_month => array());
+	$first_month = date('F', $now);
+	$second_month = date('F', strtotime('+1 month'));
+	$third_month = date('F', strtotime('+2 months'));
+	$posts = array($first_month => array(),
+		$second_month => array(),
+		$third_month => array());
 
-    $loop = new WP_Query(array('post_type' => array('devotional', 'forum')));
-    if ($loop->have_posts()) {
-        while ($loop->have_posts()) {
-            $loop->the_post();
-            $post_date = get_post_meta(get_the_ID(), 'event_date');
-            $post_month = date('F', $post_date[0]);
-            if ($post_month == $first_month) {
-                array_push($posts[$first_month], get_the_ID());
-            } elseif ($post_month == $second_month) {
-                array_push($posts[$second_month], get_the_ID());
-            } elseif ($post_month == $third_month) {
-                array_push($posts[$third_month], get_the_ID());
-            }
-        }
-    }
-    return $posts;
+	$loop = new WP_Query(array('post_type' => array('devotional', 'forum')));
+	if ($loop->have_posts()) {
+		while ($loop->have_posts()) {
+			$loop->the_post();
+			$post_date = get_post_meta(get_the_ID(), 'event_date');
+			$post_month = date('F', $post_date[0]);
+			if ($post_month == $first_month) {
+				array_push($posts[$first_month], get_the_ID());
+			} elseif ($post_month == $second_month) {
+				array_push($posts[$second_month], get_the_ID());
+			} elseif ($post_month == $third_month) {
+				array_push($posts[$third_month], get_the_ID());
+			}
+		}
+	}
+	return $posts;
 }
 
 /* * *********************************************************** */

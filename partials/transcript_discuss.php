@@ -10,7 +10,7 @@ $speaker = array();
 $numSpeakers = count($presenters);
 for ($i = 0; $i < $numSpeakers; $i++) {
     $speaker[$i]['name'] = get_the_title($presenters[$i]);
-    $speaker[$i]['title'] = get_post_meta($presenters[$i], 'title')[0];
+    $speaker[$i]['title'] = get_post_meta($presenters[$i], 'title', true);
 }
 
 //check to see if there is a transcript
